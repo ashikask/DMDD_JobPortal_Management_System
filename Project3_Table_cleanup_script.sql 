@@ -7,7 +7,9 @@ declare
 begin
    dbms_output.put_line('###Start schema cleanup###');
    for i in ( select 'JOB_POST_SKILL' table_name from dual union all
+	select 'USER_SKILL' table_name from dual union all
         select 'JOB_EDUCATION_REQ' table_name from dual union all
+	select 'USER_EDUCATION' table_name from dual union all
 	select 'APPLICATION_TRACKING' table_name from dual union all
         select 'APPLICATIONS' table_name from dual union all
 	select 'JOBPOST' table_name from dual union all
@@ -97,6 +99,7 @@ Application_Date Date not null,
 Job_Post_ID NUMBER NOT NULL CONSTRAINT Job_Post_ID_FK REFERENCES JobPost(JobPost_ID) ON DELETE CASCADE,
 User_Id NUMBER NOT NULL CONSTRAINT User_Id_FK REFERENCES USERS(User_ID) ON DELETE CASCADE)
 /
+
 -- creates table for application tracking
 create table APPLICATION_TRACKING(Application_Tracking_ID NUMBER CONSTRAINT Application_Tracking_PK primary key, 
 Status varchar2(40) CONSTRAINT Status_Check CHECK(Status IN ('APPLIED','HIRED','INTERVIEW_SCHEDULED', 'REJECTED')),
@@ -104,11 +107,26 @@ Changed_On Date not null,
 Modified_By varchar2(40) not null,
 Application_ID NUMBER NOT NULL CONSTRAINT Application_ID_FK REFERENCES APPLICATIONS(Application_ID) ON DELETE CASCADE)
 /
+
+-- creates bridge table between user and education
+create table USER_EDUCATION(Start_Date date not null ,
+End_Date DATE NOT NULL,
+Users_ID NUMBER NOT NULL CONSTRAINT Users_ID_FK REFERENCES USERS(User_ID) ON DELETE CASCADE,
+Degree_ID NUMBER NOT NULL CONSTRAINT DegreeID_FK REFERENCES EDUCATION(Degree_ID) ON DELETE CASCADE,
+CONSTRAINT CheckEndLaterThanStart CHECK (End_Date >= Start_Date));
+/
+
 -- creates bridge table between job post and education
 create table JOB_EDUCATION_REQ(JobPost_ID NUMBER NOT NULL CONSTRAINT JobPost_ID_FK REFERENCES JOBPOST(JobPost_ID) ON DELETE CASCADE,
 Degree_ID NUMBER NOT NULL CONSTRAINT Degree_ID_FK REFERENCES EDUCATION(Degree_ID) ON DELETE CASCADE)
 /
--- creates a bridge table between job posts and skills
+
+-- creates a bridge table between job posts and skillset
 CREATE TABLE JOB_POST_SKILL(JobPostSkill_ID NUMBER NOT NULL CONSTRAINT JobPostSkill_ID_FK REFERENCES JOBPOST(JobPost_ID) ON DELETE CASCADE,
 SkillSet_ID NUMBER NOT NULL CONSTRAINT SkillSet_ID_FK REFERENCES Skillset(Skillset_ID) ON DELETE CASCADE)
+/
+
+-- creates bridge table between user and skillset
+Create table User_Skill(User_ID NUMBER NOT NULL CONSTRAINT UserID_FK REFERENCES USERS(User_ID) ON DELETE CASCADE,
+SkillSet_ID NUMBER NOT NULL CONSTRAINT Skill_Set_ID_FK REFERENCES Skillset (Skillset_ID) ON DELETE CASCADE);
 /
