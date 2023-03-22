@@ -6,7 +6,9 @@ declare
     sql_command varchar(2000);
 begin
    dbms_output.put_line('###Start schema cleanup###');
-   for i in ( select 'APPLICATION_TRACKING' table_name from dual union all
+   for i in ( select 'JOB_POST_SKILL' table_name from dual union all
+        select 'JOB_EDUCATION_REQ' table_name from dual union all
+	select 'APPLICATION_TRACKING' table_name from dual union all
         select 'APPLICATIONS' table_name from dual union all
 	select 'JOBPOST' table_name from dual union all
 	select 'JOB_LOCATION' table_name from dual union all
@@ -102,4 +104,11 @@ Changed_On Date not null,
 Modified_By varchar2(40) not null,
 Application_ID NUMBER NOT NULL CONSTRAINT Application_ID_FK REFERENCES APPLICATIONS(Application_ID) ON DELETE CASCADE)
 /
-
+-- creates bridge table between job post and education
+create table JOB_EDUCATION_REQ(JobPost_ID NUMBER NOT NULL CONSTRAINT JobPost_ID_FK REFERENCES JOBPOST(JobPost_ID) ON DELETE CASCADE,
+Degree_ID NUMBER NOT NULL CONSTRAINT Degree_ID_FK REFERENCES EDUCATION(Degree_ID) ON DELETE CASCADE)
+/
+-- creates a bridge table between job posts and skills
+CREATE TABLE JOB_POST_SKILL(JobPostSkill_ID NUMBER NOT NULL CONSTRAINT JobPostSkill_ID_FK REFERENCES JOBPOST(JobPost_ID) ON DELETE CASCADE,
+SkillSet_ID NUMBER NOT NULL CONSTRAINT SkillSet_ID_FK REFERENCES Skillset(Skillset_ID) ON DELETE CASCADE)
+/
