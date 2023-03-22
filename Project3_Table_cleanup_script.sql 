@@ -61,17 +61,19 @@ Company_Description varchar2(40) not null,
 Industy_Type varchar2(40) not null, 
 Company_Size Number not null)
 /
+
 -- creates table for the different skill sets
 create table Skillset(Skillset_ID NUMBER CONSTRAINT Skillset_PK primary key, 
 Skill_Name varchar2(40) not null, 
 Skill_Type varchar2(40) CONSTRAINT Skill_Type_Check CHECK(Skill_Type IN ('TECHNICAL','SOFTSKILLS')))
 /
+
 -- creates table to list education of the user
 create table Education(Degree_ID NUMBER CONSTRAINT Degree_PK primary key, 
 Degree_Name varchar2(40) not null, 
-Degree_Type varchar2(40) not null,
-Degree_Completion DATE not null)
+Degree_Type varchar2(40) not null)
 /
+
 -- creates table for the job post
 create table JOBPOST(JobPost_ID NUMBER CONSTRAINT JobPost_PK primary key, 
 Job_Title varchar2(40) not null, 
