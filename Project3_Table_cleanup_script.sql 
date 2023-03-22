@@ -6,7 +6,10 @@ declare
     sql_command varchar(2000);
 begin
    dbms_output.put_line('###Start schema cleanup###');
-   for i in (select 'Enter_Table_Name' table_name from dual 
+   for i in (select 'JOB_LOCATION' table_name from dual union all
+	select 'COMPANY' table_name from dual union all
+	select 'SKILLSET' table_name from dual union all
+	select 'JOB_CATEGORY' table_name from dual 
    )
    loop
    dbms_output.put_line('Dropping the table: '||i.table_name);
@@ -29,3 +32,28 @@ exception
    when others then
       dbms_output.put_line('Failed to execute code:'||sqlerrm);
 end;
+/
+
+--CREATE TABLES for Job location
+create table Job_Location(Job_Location_Id NUMBER CONSTRAINT Job_Location_PK primary key, 
+Country varchar2(80) not null,
+States VARCHAR(80) not null, 
+City VARCHAR(80) not null,
+CONSTRAINT Job_Location_unique UNIQUE (States, City))
+/
+-- creates table for the different job category
+create table Job_Category(Job_Category_ID NUMBER CONSTRAINT Job_Category_PK primary key, 
+Job_Type varchar2(40) CONSTRAINT Job_Type_Check CHECK(Job_Type IN ('ONSITE','HYBRID','REMOTE')))
+/
+-- creates table for the different companies
+create table Company(Company_ID NUMBER CONSTRAINT Company_PK primary key, 
+Company_Name varchar2(40) not null, 
+Company_Description varchar2(40) not null, 
+Industy_Type varchar2(40) not null, 
+Company_Size Number not null)
+/
+-- creates table for the different skill sets
+create table Skillset(Skillset_ID NUMBER CONSTRAINT Skillset_PK primary key, 
+Skill_Name varchar2(40) not null, 
+Skill_Type varchar2(40) CONSTRAINT Skill_Type_Check CHECK(Skill_Type IN ('TECHNICAL','SOFTSKILLS')))
+/
