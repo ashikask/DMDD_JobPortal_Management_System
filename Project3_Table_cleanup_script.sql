@@ -79,6 +79,7 @@ create table JOBPOST(JobPost_ID NUMBER CONSTRAINT JobPost_PK primary key,
 Job_Title varchar2(40) not null, 
 Creation_Date Date not null,
 Job_Description varchar2(400) not null,
+Salary NUMBER not null,
 Created_By varchar2(40) not null,
 Hiring_Status varchar2(40) CONSTRAINT Hiring_Status_Check CHECK(Hiring_Status IN ('AVAILABLE','EXPIRED')),
 Job_Location_Id NUMBER NOT NULL CONSTRAINT Job_Location_Id_FK REFERENCES Job_Location(Job_Location_Id) ON DELETE CASCADE,
@@ -133,7 +134,7 @@ Create table User_Skill(User_ID NUMBER NOT NULL CONSTRAINT UserID_FK REFERENCES 
 SkillSet_ID NUMBER NOT NULL CONSTRAINT Skill_Set_ID_FK REFERENCES Skillset (Skillset_ID) ON DELETE CASCADE);
 /
 
-----Inserting data into the table Job Location
+-------- Inserting data into the table Job Location ----------------
 
 INSERT INTO Job_Location(Job_Location_Id, Country, States, City)
  select 101, 'United States', 'California', 'San Francisco' from dual union all
@@ -147,14 +148,14 @@ INSERT INTO Job_Location(Job_Location_Id, Country, States, City)
  select 109, 'United States', 'Colorado', 'Denver' from dual union all
  select 110, 'United States', 'Florida', 'Miami' from dual;
  
- ----Inserting data into the table Job Category
+-------- Inserting data into the table Job Category ------------------
  
 INSERT INTO Job_Category(Job_Category_ID, Job_Type)
  select 101, 'ONSITE' from dual union all
  select 102, 'REMOTE' from dual union all
  select 103, 'HYBRID' from dual;
  
- ----Inserting data into the table Company
+-------- Inserting data into the table Company ------------------
  
 INSERT INTO Company(Company_ID, Company_Name, Company_Description, Industy_Type, Company_Size)
  select 101, 'TechSoft', 'TechSoft is a software company.', 'Technology', 150 from dual union all
@@ -162,25 +163,26 @@ INSERT INTO Company(Company_ID, Company_Name, Company_Description, Industy_Type,
  select 103, 'GreenEnergy', 'GreenEnergy is an energy company.', 'Energy', 200 from dual union all
  select 104, 'SwiftBank', 'SwiftBank is a financial services provider.', 'Banking', 300 from dual union all
  select 105, 'MediCare', 'MediCare is a healthcare provider.', 'Healthcare', 350 from dual union all
-select 106, 'ABC Corp', 'ABC Corp is software company', 'Technology', 1000 from dual union all
+ select 106, 'ABC Corp', 'ABC Corp is software company', 'Technology', 1000 from dual union all
  select 107, 'EduCenter', 'EduCenter is an educational services provider.', 'Education', 75 from dual;
  
- ----Inserting data into the table Skillset
+-------- Inserting data into the table Skillset ------------------
  
 INSERT INTO Skillset(Skillset_ID, Skill_Name, Skill_Type)
- select 101, 'Java', 'TECHNICAL' from dual union all
- select 102, 'Communication', 'SOFTSKILLS' from dual union all
- select 103, 'Public Speaking', 'SOFTSKILLS' from dual union all
- select 104, 'Python', 'TECHNICAL' from dual union all
- select 105, 'MySQL', 'TECHNICAL' from dual union all
- select 106, 'Problem Solving', 'SOFTSKILLS' from dual union all
- select 107, 'Leadership', 'SOFTSKILLS' from dual union all
- select 108, 'R Studio', 'TECHNICAL' from dual union all
-  select 109, 'Teamwork', 'SOFTSKILLS' from dual union all
-   select 110, 'Project Management', 'SOFTSKILLS' from dual union all
-    select 111, 'Data Analysis', 'TECHNICAL' from dual;
+select 101, 'Java', 'TECHNICAL' from dual union all
+select 102, 'Communication', 'SOFTSKILLS' from dual union all
+select 103, 'Public Speaking', 'SOFTSKILLS' from dual union all
+select 104, 'Python', 'TECHNICAL' from dual union all
+select 105, 'MySQL', 'TECHNICAL' from dual union all
+select 106, 'Problem Solving', 'SOFTSKILLS' from dual union all
+select 107, 'Leadership', 'SOFTSKILLS' from dual union all
+select 108, 'R Studio', 'TECHNICAL' from dual union all
+select 109, 'Teamwork', 'SOFTSKILLS' from dual union all
+select 110, 'Project Management', 'SOFTSKILLS' from dual union all
+select 111, 'Data Analysis', 'TECHNICAL' from dual;
  
-----Inserting data into the table Users
+-------- Inserting data into the table Users ------------------
+
 INSERT INTO USERS (User_ID, First_Name, Last_Name, Date_of_Birth, Gender, Phone_Number, Role_Type)
 select 101, 'John', 'Doe', TO_DATE('1990-01-01', 'YYYY-MM-DD'), 'MALE', 1234567890, 'JOBSEEKER' from dual union all
 select 102, 'Jane', 'Doe', TO_DATE('1995-02-14', 'YYYY-MM-DD'), 'FEMALE', 2345678901, 'JOBSEEKER' from dual union all
@@ -189,7 +191,8 @@ select 104, 'David', 'Lee', TO_DATE('2003-04-15', 'YYYY-MM-DD'), 'MALE', 5678901
 select 105, 'Sarah', 'Kim', TO_DATE('1991-09-28', 'YYYY-MM-DD'), 'FEMALE', 6789012345, 'JOBSEEKER' from dual union all
 select 106, 'Emily', 'Wang', TO_DATE('1994-11-11', 'YYYY-MM-DD'), 'FEMALE', 8901234567, 'JOBSEEKER' from dual;
 
-----Inserting data into the table Education
+-------- Inserting data into the table Education ------------------
+
 INSERT INTO Education(Degree_ID, Degree_Name, Degree_Type)
 select 101, 'Engineering Management', 'Masters' from dual union all
 select 102, 'Business Administration', 'Bachelors' from dual union all
@@ -200,18 +203,20 @@ select 107, 'Information System', 'Masters' from dual union all
 select 106, 'Industrial Engineering','Masters' from dual;
 
 
-----Inserting data into the table Job Post
-INSERT INTO JOBPOST(JobPost_ID, Job_Title, Creation_Date, Job_Description, Created_By, Hiring_Status, Job_Location_Id, Job_Category_ID, Job_Company_Id)
-select 101, 'Software Developer', TO_DATE('2022-02-15', 'YYYY-MM-DD'), 'We are seeking a skilled software developer to join our team.', 'Bob Smith', 'AVAILABLE', 101, 101, 101 from dual union all
-select 102, 'Marketing Manager', TO_DATE('2022-03-01', 'YYYY-MM-DD'), 'We are looking for an experienced marketing manager to lead our team.', 'Bob Smith', 'AVAILABLE', 102, 102, 102 from dual union all
-select 103, 'Data Analyst', TO_DATE('2022-02-28', 'YYYY-MM-DD'), 'We are seeking a data analyst to help us make informed business decisions.', 'Bob Smith', 'AVAILABLE', 101, 103, 103 from dual union all
-select 104, 'Finance Manager', TO_DATE('2022-03-15', 'YYYY-MM-DD'), 'We are looking for a finance manager to oversee our financial operations.', 'Bob Smith', 'AVAILABLE', 103, 102, 104 from dual union all
-select 105, 'IT Support Specialist', TO_DATE('2022-02-20', 'YYYY-MM-DD'), 'We are seeking an IT support specialist to assist our employees with technical issues.', 'Bob Smith', 'AVAILABLE', 104, 101, 105 from dual union all
-select 106, 'Sales Manager', TO_DATE('2022-03-20', 'YYYY-MM-DD'), 'We are seeking an experienced sales manager to lead our team and drive sales growth.', 'Bob Smith', 'AVAILABLE', 105, 102, 105 from dual union all
-select 107, 'Project Manager', TO_DATE('2022-03-10', 'YYYY-MM-DD'), 'We are looking for a skilled project manager to oversee our projects and ensure they are completed on time and within budget.', 'Bob Smith', 'AVAILABLE', 106, 103, 101 from dual union all
-select 108, 'HR Manager', TO_DATE('2022-03-01', 'YYYY-MM-DD'), 'We are looking for an experienced HR manager to oversee our HR department and manage employee relations.', 'Bob Smith', 'AVAILABLE', 108, 103, 103 from dual;
+-------- Inserting data into the table Job Post ------------------
 
-----Inserting data into the table Applications
+INSERT INTO JOBPOST(JobPost_ID, Job_Title, Creation_Date, Job_Description, Created_By, Salary, Hiring_Status, Job_Location_Id, Job_Category_ID, Job_Company_Id)
+select 101, 'Software Developer', TO_DATE('2022-02-15', 'YYYY-MM-DD'), 'We are seeking a skilled software developer to join our team.', user, 50000, 'AVAILABLE', 101, 101, 101 from dual union all
+select 102, 'Marketing Manager', TO_DATE('2022-03-01', 'YYYY-MM-DD'), 'We are looking for an experienced marketing manager to lead our team.', user,100000, 'AVAILABLE', 102, 102, 102 from dual union all
+select 103, 'Data Analyst', TO_DATE('2022-02-28', 'YYYY-MM-DD'), 'We are seeking a data analyst to help us make informed business decisions.', user, 60000,'AVAILABLE', 101, 103, 103 from dual union all
+select 104, 'Finance Manager', TO_DATE('2022-03-15', 'YYYY-MM-DD'), 'We are looking for a finance manager to oversee our financial operations.', user, 120000,'AVAILABLE', 103, 102, 104 from dual union all
+select 105, 'IT Support Specialist', TO_DATE('2022-02-20', 'YYYY-MM-DD'), 'We are seeking an IT support specialist to assist our employees with technical issues.', user,130000, 'AVAILABLE', 104, 101, 105 from dual union all
+select 106, 'Sales Manager', TO_DATE('2022-03-20', 'YYYY-MM-DD'), 'We are seeking an experienced sales manager to lead our team and drive sales growth.', user, 4000,'AVAILABLE', 105, 102, 105 from dual union all
+select 107, 'Project Manager', TO_DATE('2022-03-10', 'YYYY-MM-DD'), 'We are looking for a skilled project manager to oversee our projects and ensure they are completed on time and within budget.', user,140000, 'AVAILABLE', 106, 103, 101 from dual union all
+select 108, 'HR Manager', TO_DATE('2022-03-01', 'YYYY-MM-DD'), 'We are looking for an experienced HR manager to oversee our HR department and manage employee relations.', user, 700000,'AVAILABLE', 108, 103, 103 from dual;
+
+-------- Inserting data into the table Applications ------------------
+
 INSERT INTO APPLICATIONS(Application_ID, Current_Status, Application_Date, Job_Post_ID, User_ID)
 select 321, 'APPLIED', TO_DATE('2023-03-23', 'YYYY-MM-DD'), 101,105 from dual UNION ALL
 select 322, 'REJECTED', TO_DATE('2023-02-10', 'YYYY-MM-DD'),  101, 102 from dual union all
@@ -226,34 +231,34 @@ select 330, 'APPLIED', TO_DATE('2023-02-09', 'YYYY-MM-DD'),  106, 106 from dual 
 select 331, 'INTERVIEW_SCHEDULED', TO_DATE('2023-01-10', 'YYYY-MM-DD'),  101, 101 from dual union all
 select 332, 'HIRED', TO_DATE('2023-02-12', 'YYYY-MM-DD'),  101, 106 from dual;
 
-----Inserting data into the table Application Tracking
+-------- Inserting data into the table Application Tracking ------------------
 
 INSERT INTO APPLICATION_TRACKING (APPLICATION_TRACKING_ID, STATUS, CHANGED_ON, MODIFIED_BY, APPLICATION_ID)
-select 401, 'APPLIED', TO_DATE('3/23/2023', 'MM/DD/YYYY'), 'Bob Smith', 321 from dual UNION ALL
-select 402, 'APPLIED', TO_DATE('2/10/2023', 'MM/DD/YYYY'), 'Bob Smith', 322 from dual UNION ALL
-select 403, 'INTERVIEW_SCHEDULED', TO_DATE('2/23/2023', 'MM/DD/YYYY'), 'Bob Smith', 322 from dual UNION ALL
-select 404, 'REJECTED', TO_DATE('3/15/2023', 'MM/DD/YYYY'), 'Bob Smith', 322 from dual UNION ALL
+select 401, 'APPLIED', TO_DATE('3/23/2023', 'MM/DD/YYYY'), user, 321 from dual UNION ALL
+select 402, 'APPLIED', TO_DATE('2/10/2023', 'MM/DD/YYYY'), user, 322 from dual UNION ALL
+select 403, 'INTERVIEW_SCHEDULED', TO_DATE('2/23/2023', 'MM/DD/YYYY'), user, 322 from dual UNION ALL
+select 404, 'REJECTED', TO_DATE('3/15/2023', 'MM/DD/YYYY'), user, 322 from dual UNION ALL
 select 405, 'APPLIED', TO_DATE('1/13/2023', 'MM/DD/YYYY'), 'Jane Doe', 323 from dual UNION ALL
-select 406, 'INTERVIEW_SCHEDULED', TO_DATE('1/28/2023', 'MM/DD/YYYY'), 'Bob Smith', 323 from dual UNION ALL
-select 407, 'HIRED', TO_DATE('2/6/2023', 'MM/DD/YYYY'), 'Bob Smith', 323 from dual UNION ALL
+select 406, 'INTERVIEW_SCHEDULED', TO_DATE('1/28/2023', 'MM/DD/YYYY'), user, 323 from dual UNION ALL
+select 407, 'HIRED', TO_DATE('2/6/2023', 'MM/DD/YYYY'), user, 323 from dual UNION ALL
 select 408, 'APPLIED', TO_DATE('2/1/2023', 'MM/DD/YYYY'), 'Sarah Kim', 324 from dual UNION ALL
-select 409, 'INTERVIEW_SCHEDULED', TO_DATE('2/10/2023', 'MM/DD/YYYY'), 'Bob Smith', 324 from dual UNION ALL
+select 409, 'INTERVIEW_SCHEDULED', TO_DATE('2/10/2023', 'MM/DD/YYYY'), user, 324 from dual UNION ALL
 select 410, 'APPLIED', TO_DATE('1/1/2023', 'MM/DD/YYYY'), 'Jane Doe', 325 from dual UNION ALL
-select 411, 'INTERVIEW_SCHEDULED', TO_DATE('1/9/2023', 'MM/DD/YYYY'), 'Bob Smith', 325 from dual UNION ALL
+select 411, 'INTERVIEW_SCHEDULED', TO_DATE('1/9/2023', 'MM/DD/YYYY'), user, 325 from dual UNION ALL
 select 412, 'APPLIED', TO_DATE('1/24/2023', 'MM/DD/YYYY'), 'Sarah Kim', 326 from dual UNION ALL
 select 413, 'APPLIED', TO_DATE('12/30/2022', 'MM/DD/YYYY'), 'Jane Doe', 328 from dual UNION ALL
 select 414, 'APPLIED', TO_DATE('02/21/2023', 'MM/DD/YYYY'), 'David Lee', 329 from dual UNION ALL
 select 415, 'APPLIED', TO_DATE('02/09/2023', 'MM/DD/YYYY'), 'Emily Wang', 330 from dual UNION ALL
 select 416, 'APPLIED', TO_DATE('11/11/2022', 'MM/DD/YYYY'), 'John Doe', 331 from dual UNION ALL
-select 417, 'INTERVIEW_SCHEDULED', TO_DATE('01/10/2023', 'MM/DD/YYYY'), 'Bob Smith', 331 from dual UNION ALL
+select 417, 'INTERVIEW_SCHEDULED', TO_DATE('01/10/2023', 'MM/DD/YYYY'), user, 331 from dual UNION ALL
 select 418, 'APPLIED', TO_DATE('12/17/2022', 'MM/DD/YYYY'), 'Sarah Kim', 327 from dual UNION ALL
-select 419, 'INTERVIEW_SCHEDULED', TO_DATE('01/12/2023', 'MM/DD/YYYY'), 'Bob Smith', 327 from dual UNION ALL
-select 420, 'HIRED', TO_DATE('02/22/2023', 'MM/DD/YYYY'), 'Bob Smith', 327 from dual UNION ALL
+select 419, 'INTERVIEW_SCHEDULED', TO_DATE('01/12/2023', 'MM/DD/YYYY'), user, 327 from dual UNION ALL
+select 420, 'HIRED', TO_DATE('02/22/2023', 'MM/DD/YYYY'), user, 327 from dual UNION ALL
 select 421, 'APPLIED', TO_DATE('08/09/2022', 'MM/DD/YYYY'), 'Emily Wang', 332 from dual UNION ALL
-select 422, 'INTERVIEW_SCHEDULED', TO_DATE('08/12/2022', 'MM/DD/YYYY'), 'Bob Smith', 332 from dual UNION ALL
-select 423, 'HIRED', TO_DATE('02/12/2023', 'MM/DD/YYYY'), 'Bob Smith', 332 from dual;
+select 422, 'INTERVIEW_SCHEDULED', TO_DATE('08/12/2022', 'MM/DD/YYYY'), user, 332 from dual UNION ALL
+select 423, 'HIRED', TO_DATE('02/12/2023', 'MM/DD/YYYY'), user, 332 from dual;
 
-----Inserting data into the table Job Post Skill
+-------- Inserting data into the table Job Post Skill ------------------
 
 INSERT INTO JOB_POST_SKILL(JobPostSkill_ID, Skillset_ID)
 select 101, 101 from dual UNION ALL
@@ -279,7 +284,7 @@ select 108, 110 from dual UNION ALL
 select 108, 102 from dual UNION ALL
 select 108, 103 from dual;
 
-----Inserting data into the table User skill
+-------- Inserting data into the table User skill ------------------
 
 INSERT INTO User_Skill(User_ID, Skillset_ID)
 select 101, 101 from dual UNION ALL
@@ -305,7 +310,7 @@ select 106, 103 from dual UNION ALL
 select 106, 101 from dual UNION ALL
 select 106, 104 from dual;
 
-----Inserting data into the table User Education
+-------- Inserting data into the table User Education ------------------
 
 INSERT INTO USER_EDUCATION (Users_ID, DEGREE_ID, START_DATE, END_DATE)
 select 101, 104, TO_DATE('09/4/2020', 'MM/DD/YYYY'), TO_DATE('5/4/2024', 'MM/DD/YYYY') from dual UNION ALL
@@ -318,7 +323,7 @@ select 105, 107, TO_DATE('08/29/2024', 'MM/DD/YYYY'), TO_DATE('5/15/2026', 'MM/D
 select 106, 104, TO_DATE('09/6/2020', 'MM/DD/YYYY'), TO_DATE('4/29/2024', 'MM/DD/YYYY')from dual UNION ALL
 select 106, 101, TO_DATE('08/4/2024', 'MM/DD/YYYY'), TO_DATE('5/17/2026', 'MM/DD/YYYY')from dual;
 
-----Inserting data into the table Job Education
+-------- Inserting data into the table Job Education ------------------
 
 INSERT INTO JOB_EDUCATION_REQ (JobPost_ID, Degree_ID)
 select 101, 104 from dual UNION ALL
@@ -342,3 +347,6 @@ select 107, 101 from dual UNION ALL
 select 107, 106 from dual UNION ALL
 select 108, 101 from dual UNION ALL
 select 108, 106 from dual;
+
+
+commit;
