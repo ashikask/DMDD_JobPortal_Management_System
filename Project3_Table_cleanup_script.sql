@@ -446,3 +446,26 @@ FROM (
   WHERE STATUS = 'APPLIED'
 )
 WHERE HIRED_DATE IS NOT NULL;
+
+
+--------- 9. Top jobs that are trending based on no.of applications made --------
+
+CREATE OR REPLACE VIEW TRENDING_JOBS AS
+SELECT                  J.JOB_TITLE, COUNT(A.APPLICATION_ID) AS NUM_APPLICATIONS
+FROM                    JOBPOST J
+JOIN APPLICATIONS A ON  J.JOBPOST_ID = A.JOB_POST_ID
+GROUP BY                J.JOB_TITLE
+ORDER BY                NUM_APPLICATIONS DESC
+FETCH FIRST 3 ROWS ONLY;
+
+
+--------- 10. Tracks the number of candidates each recruiter has sourced and those hired. 
+----------The report includes information on the total number of candidates sourced, the number of candidates 
+--------- that were hired, and the percentage of candidates that were hired   ----
+CREATE OR REPLACE VIEW RECRUITER_ANALYSIS AS
+SELECT      MODIFIED_BY AS RECRUITER, COUNT(APPLICATION_ID) AS TOTAL_CANDIDATES_SOURCED,
+            SUM(CASE WHEN STATUS = 'HIRED' THEN 1 ELSE 0 END) AS HIRED_CANDIDATES,
+            CONCAT(ROUND( SUM(CASE WHEN STATUS = 'HIRED' THEN 1 ELSE 0 END) / COUNT(APPLICATION_ID) * 100,2),'%') AS HIRED_PERCENTAGE
+FROM        APPLICATION_TRACKING
+WHERE MODIFIED_BY NOT IN (SELECT FIRST_NAME||' '||LAST_NAME FROM USERS WHERE ROLE_TYPE = 'JOBSEEKER')
+GROUP BY    MODIFIED_BY;
