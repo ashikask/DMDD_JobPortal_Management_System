@@ -79,6 +79,7 @@ create table JOBPOST(JobPost_ID NUMBER CONSTRAINT JobPost_PK primary key,
 Job_Title varchar2(40) not null, 
 Creation_Date Date not null,
 Job_Description varchar2(400) not null,
+Salary NUMBER not null,
 Created_By varchar2(40) not null,
 Hiring_Status varchar2(40) CONSTRAINT Hiring_Status_Check CHECK(Hiring_Status IN ('AVAILABLE','EXPIRED')),
 Job_Location_Id NUMBER NOT NULL CONSTRAINT Job_Location_Id_FK REFERENCES Job_Location(Job_Location_Id) ON DELETE CASCADE,
@@ -201,15 +202,15 @@ select 106, 'Industrial Engineering','Masters' from dual;
 
 
 ----Inserting data into the table Job Post
-INSERT INTO JOBPOST(JobPost_ID, Job_Title, Creation_Date, Job_Description, Created_By, Hiring_Status, Job_Location_Id, Job_Category_ID, Job_Company_Id)
-select 101, 'Software Developer', TO_DATE('2022-02-15', 'YYYY-MM-DD'), 'We are seeking a skilled software developer to join our team.', 'Bob Smith', 'AVAILABLE', 101, 101, 101 from dual union all
-select 102, 'Marketing Manager', TO_DATE('2022-03-01', 'YYYY-MM-DD'), 'We are looking for an experienced marketing manager to lead our team.', 'Bob Smith', 'AVAILABLE', 102, 102, 102 from dual union all
-select 103, 'Data Analyst', TO_DATE('2022-02-28', 'YYYY-MM-DD'), 'We are seeking a data analyst to help us make informed business decisions.', 'Bob Smith', 'AVAILABLE', 101, 103, 103 from dual union all
-select 104, 'Finance Manager', TO_DATE('2022-03-15', 'YYYY-MM-DD'), 'We are looking for a finance manager to oversee our financial operations.', 'Bob Smith', 'AVAILABLE', 103, 102, 104 from dual union all
-select 105, 'IT Support Specialist', TO_DATE('2022-02-20', 'YYYY-MM-DD'), 'We are seeking an IT support specialist to assist our employees with technical issues.', 'Bob Smith', 'AVAILABLE', 104, 101, 105 from dual union all
-select 106, 'Sales Manager', TO_DATE('2022-03-20', 'YYYY-MM-DD'), 'We are seeking an experienced sales manager to lead our team and drive sales growth.', 'Bob Smith', 'AVAILABLE', 105, 102, 105 from dual union all
-select 107, 'Project Manager', TO_DATE('2022-03-10', 'YYYY-MM-DD'), 'We are looking for a skilled project manager to oversee our projects and ensure they are completed on time and within budget.', 'Bob Smith', 'AVAILABLE', 106, 103, 101 from dual union all
-select 108, 'HR Manager', TO_DATE('2022-03-01', 'YYYY-MM-DD'), 'We are looking for an experienced HR manager to oversee our HR department and manage employee relations.', 'Bob Smith', 'AVAILABLE', 108, 103, 103 from dual;
+INSERT INTO JOBPOST(JobPost_ID, Job_Title, Creation_Date, Job_Description, Created_By, Salary, Hiring_Status, Job_Location_Id, Job_Category_ID, Job_Company_Id)
+select 101, 'Software Developer', TO_DATE('2022-02-15', 'YYYY-MM-DD'), 'We are seeking a skilled software developer to join our team.', 'Bob Smith', 50000, 'AVAILABLE', 101, 101, 101 from dual union all
+select 102, 'Marketing Manager', TO_DATE('2022-03-01', 'YYYY-MM-DD'), 'We are looking for an experienced marketing manager to lead our team.', 'Bob Smith',100000, 'AVAILABLE', 102, 102, 102 from dual union all
+select 103, 'Data Analyst', TO_DATE('2022-02-28', 'YYYY-MM-DD'), 'We are seeking a data analyst to help us make informed business decisions.', 'Bob Smith', 60000,'AVAILABLE', 101, 103, 103 from dual union all
+select 104, 'Finance Manager', TO_DATE('2022-03-15', 'YYYY-MM-DD'), 'We are looking for a finance manager to oversee our financial operations.', 'Bob Smith', 120000,'AVAILABLE', 103, 102, 104 from dual union all
+select 105, 'IT Support Specialist', TO_DATE('2022-02-20', 'YYYY-MM-DD'), 'We are seeking an IT support specialist to assist our employees with technical issues.', 'Bob Smith',130000, 'AVAILABLE', 104, 101, 105 from dual union all
+select 106, 'Sales Manager', TO_DATE('2022-03-20', 'YYYY-MM-DD'), 'We are seeking an experienced sales manager to lead our team and drive sales growth.', 'Bob Smith', 4000,'AVAILABLE', 105, 102, 105 from dual union all
+select 107, 'Project Manager', TO_DATE('2022-03-10', 'YYYY-MM-DD'), 'We are looking for a skilled project manager to oversee our projects and ensure they are completed on time and within budget.', 'Bob Smith',140000, 'AVAILABLE', 106, 103, 101 from dual union all
+select 108, 'HR Manager', TO_DATE('2022-03-01', 'YYYY-MM-DD'), 'We are looking for an experienced HR manager to oversee our HR department and manage employee relations.', 'Bob Smith', 700000,'AVAILABLE', 108, 103, 103 from dual;
 
 ----Inserting data into the table Applications
 INSERT INTO APPLICATIONS(Application_ID, Current_Status, Application_Date, Job_Post_ID, User_ID)
@@ -342,3 +343,6 @@ select 107, 101 from dual UNION ALL
 select 107, 106 from dual UNION ALL
 select 108, 101 from dual UNION ALL
 select 108, 106 from dual;
+
+
+commit;
