@@ -18,6 +18,5 @@ grant select,delete,update,insert on sys_admin.jobpost to recruiter1;
 grant select,update on sys_admin.applications to recruiter1;
 grant select on sys_admin.Acceptance_Rates to recruiter1;
 grant select on sys_admin.Recruiter_Analysis to recruiter1;
-grant select on sys_admin.jobseeker_profile to recruiter1;
 grant select on sys_admin.jobpost_analysis to recruiter1;
 grant select on sys_admin.application_status to recruiter1;
