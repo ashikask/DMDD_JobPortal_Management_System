@@ -50,7 +50,7 @@ BEGIN
     RETURN table_count > 0;
 END;
 
-
+/
 CREATE OR REPLACE PROCEDURE create_table(
     tbl_name VARCHAR2,
     create_query VARCHAR2
@@ -364,53 +364,140 @@ EXEC SKILLSET_DETAILS('Data Analysis', 'TECHNICAL');
  
 -------- Inserting data into the table Users ------------------
 
-INSERT INTO USERS (User_ID, First_Name, Last_Name, Date_of_Birth, Gender, Phone_Number, Role_Type)
-select 101, 'John', 'Doe', TO_DATE('1990-01-01', 'YYYY-MM-DD'), 'MALE', 1234567890, 'JOBSEEKER' from dual union all
-select 102, 'Jane', 'Doe', TO_DATE('1995-02-14', 'YYYY-MM-DD'), 'FEMALE', 2345678901, 'JOBSEEKER' from dual union all
-select 103, 'Bob', 'Smith', TO_DATE('1985-07-22', 'YYYY-MM-DD'), 'MALE', 3456789012, 'RECRUITER' from dual union all
-select 104, 'David', 'Lee', TO_DATE('2003-04-15', 'YYYY-MM-DD'), 'MALE', 5678901234, 'JOBSEEKER' from dual union all
-select 105, 'Sarah', 'Kim', TO_DATE('1991-09-28', 'YYYY-MM-DD'), 'FEMALE', 6789012345, 'JOBSEEKER' from dual union all
-select 106, 'Emily', 'Wang', TO_DATE('1994-11-11', 'YYYY-MM-DD'), 'FEMALE', 8901234567, 'JOBSEEKER' from dual;
+create or replace PROCEDURE USER_DETAILS(First_Name in VARCHAR2,
+Last_Name IN VARCHAR2, Date_of_Birth IN DATE, Gender IN VARCHAR2,Phone_Number IN NUMBER, Role_Type IN VARCHAR2)
+	AS
+	BEGIN
+	dbms_output.put_line('----------------------------------------------------------');
+	INSERT INTO USERS(First_Name, Last_Name, Date_of_Birth, Gender, Phone_Number, Role_Type) VALUES (First_Name, Last_Name, Date_of_Birth, Gender, Phone_Number, Role_Type);
+	dbms_output.put_line('Row inserted into USERS Table');
+	dbms_output.put_line('----------------------------------------------------------');
+	commit;
+	exception
+		when dup_val_on_index then
+		dbms_output.put_line('Duplicate Value Found in USERS table! Insert Different Value');
+		when others then
+		dbms_output.put_line('Error while inserting data into USERS Table');
+		rollback;
+			dbms_output.put_line('The error encountered is: ');
+			dbms_output.put_line(dbms_utility.format_error_stack);
+			dbms_output.put_line('----------------------------------------------------------');
+	end USER_DETAILS;
+/
+
+EXEC USER_DETAILS('John', 'Doe', TO_DATE('1990-01-01', 'YYYY-MM-DD'), 'MALE', 1234567890, 'JOBSEEKER');
+EXEC USER_DETAILS('Jane', 'Doe', TO_DATE('1995-02-14', 'YYYY-MM-DD'), 'FEMALE', 2345678901, 'JOBSEEKER');
+EXEC USER_DETAILS('Bob', 'Smith', TO_DATE('1985-07-22', 'YYYY-MM-DD'), 'MALE', 3456789012, 'RECRUITER');
+EXEC USER_DETAILS('David', 'Lee', TO_DATE('2003-04-15', 'YYYY-MM-DD'), 'MALE', 5678901234, 'JOBSEEKER');
+EXEC USER_DETAILS('Sarah', 'Kim', TO_DATE('1991-09-28', 'YYYY-MM-DD'), 'FEMALE', 6789012345, 'JOBSEEKER');
+EXEC USER_DETAILS('Emily', 'Wang', TO_DATE('1994-11-11', 'YYYY-MM-DD'), 'FEMALE', 8901234567, 'JOBSEEKER');
+/
 
 -------- Inserting data into the table Education ------------------
 
-INSERT INTO Education(Degree_ID, Degree_Name, Degree_Type)
-select 101, 'Engineering Management', 'Masters' from dual union all
-select 102, 'Business Administration', 'Bachelors' from dual union all
-select 103, 'Business Administration', 'Masters' from dual union all
-select 105, 'Computer Science','Masters' from dual union all
-select 104, 'Computer Science','Bachelors' from dual union all
-select 107, 'Information System', 'Masters' from dual union all
-select 106, 'Industrial Engineering','Masters' from dual;
+create or replace PROCEDURE EDUCATION_DETAILS(Degree_Name in VARCHAR2, Degree_Type in VARCHAR2)
+	AS
+	BEGIN
+	dbms_output.put_line('----------------------------------------------------------');
+	INSERT INTO EDUCATION(Degree_Name, Degree_Type) VALUES (Degree_Name, Degree_Type);
+	dbms_output.put_line('Row inserted into Education Table');
+	dbms_output.put_line('----------------------------------------------------------');
+	commit;
+	exception
+		when dup_val_on_index then
+		dbms_output.put_line('Duplicate Value Found in Education table! Insert Different Value');
+		when others then
+		dbms_output.put_line('Error while inserting data into Education Table');
+		rollback;
+			dbms_output.put_line('The error encountered is: ');
+			dbms_output.put_line(dbms_utility.format_error_stack);
+			dbms_output.put_line('----------------------------------------------------------');
+	end EDUCATION_DETAILS;
+
+/
+
+EXEC EDUCATION_DETAILS('Engineering Management', 'Masters');
+EXEC EDUCATION_DETAILS('Business Administration', 'Bachelors');
+EXEC EDUCATION_DETAILS('Business Administration', 'Masters');
+EXEC EDUCATION_DETAILS('Computer Science','Masters');
+EXEC EDUCATION_DETAILS('Computer Science','Bachelors');
+EXEC EDUCATION_DETAILS('Information System', 'Masters');
+EXEC EDUCATION_DETAILS('Industrial Engineering','Masters');
+/
+
 
 
 -------- Inserting data into the table Job Post ------------------
 
-INSERT INTO JOBPOST(JobPost_ID, Job_Title, Creation_Date, Job_Description, Created_By, Salary, Hiring_Status, Job_Location_Id, Job_Category_ID, Job_Company_Id)
-select 101, 'Software Developer', TO_DATE('2022-02-15', 'YYYY-MM-DD'), 'We are seeking a skilled software developer to join our team.', user, 50000, 'AVAILABLE', 101, 101, 101 from dual union all
-select 102, 'Marketing Manager', TO_DATE('2022-03-01', 'YYYY-MM-DD'), 'We are looking for an experienced marketing manager to lead our team.', user,100000, 'AVAILABLE', 102, 102, 102 from dual union all
-select 103, 'Data Analyst', TO_DATE('2022-02-28', 'YYYY-MM-DD'), 'We are seeking a data analyst to help us make informed business decisions.', user, 60000,'AVAILABLE', 101, 103, 103 from dual union all
-select 104, 'Finance Manager', TO_DATE('2022-03-15', 'YYYY-MM-DD'), 'We are looking for a finance manager to oversee our financial operations.', user, 120000,'AVAILABLE', 103, 102, 104 from dual union all
-select 105, 'IT Support Specialist', TO_DATE('2022-02-20', 'YYYY-MM-DD'), 'We are seeking an IT support specialist to assist our employees with technical issues.', user,130000, 'AVAILABLE', 104, 101, 105 from dual union all
-select 106, 'Sales Manager', TO_DATE('2022-03-20', 'YYYY-MM-DD'), 'We are seeking an experienced sales manager to lead our team and drive sales growth.', user, 4000,'AVAILABLE', 105, 102, 105 from dual union all
-select 107, 'Project Manager', TO_DATE('2022-03-10', 'YYYY-MM-DD'), 'We are looking for a skilled project manager to oversee our projects and ensure they are completed on time and within budget.', user,140000, 'AVAILABLE', 106, 103, 101 from dual union all
-select 108, 'HR Manager', TO_DATE('2022-03-01', 'YYYY-MM-DD'), 'We are looking for an experienced HR manager to oversee our HR department and manage employee relations.', user, 700000,'AVAILABLE', 108, 103, 103 from dual;
+create or replace PROCEDURE JOBPOST_DETAILS(Job_Title in VARCHAR2, Creation_Date in DATE, Job_Description in VARCHAR2,
+    Created_By in VARCHAR2, Salary in NUMBER, Hiring_Status in VARCHAR2, Job_Location_Id in NUMBER, Job_Category_ID in NUMBER, Job_Company_Id in NUMBER)
+	AS
+	BEGIN
+	dbms_output.put_line('----------------------------------------------------------');
+	INSERT INTO JOBPOST(Job_Title, Creation_Date, Job_Description, Created_By, Salary, Hiring_Status, Job_Location_Id, Job_Category_ID, Job_Company_Id) 
+    VALUES (Job_Title, Creation_Date, Job_Description, Created_By, Salary, Hiring_Status, Job_Location_Id, Job_Category_ID, Job_Company_Id);
+	dbms_output.put_line('Row inserted into JOBPOST Table');
+	dbms_output.put_line('----------------------------------------------------------');
+	commit;
+	exception
+		when dup_val_on_index then
+		dbms_output.put_line('Duplicate Value Found in JOBPOST table! Insert Different Value');
+		when others then
+		dbms_output.put_line('Error while inserting data into JOBPOST Table');
+		rollback;
+			dbms_output.put_line('The error encountered is: ');
+			dbms_output.put_line(dbms_utility.format_error_stack);
+			dbms_output.put_line('----------------------------------------------------------');
+	end JOBPOST_DETAILS;
+/
+
+
+EXEC JOBPOST_DETAILS('Software Developer', TO_DATE('2022-02-15', 'YYYY-MM-DD'), 'We are seeking a skilled software developer to join our team.', 'Bob Smith', 50000, 'AVAILABLE', 101, 101, 101);
+EXEC JOBPOST_DETAILS('Marketing Manager', TO_DATE('2022-03-01', 'YYYY-MM-DD'), 'We are looking for an experienced marketing manager to lead our team.', 'Bob Smith',100000, 'AVAILABLE', 102, 102, 102);
+EXEC JOBPOST_DETAILS('Data Analyst', TO_DATE('2022-02-28', 'YYYY-MM-DD'), 'We are seeking a data analyst to help us make informed business decisions.', 'Bob Smith', 60000,'AVAILABLE', 101, 103, 103);
+EXEC JOBPOST_DETAILS('Finance Manager', TO_DATE('2022-03-15', 'YYYY-MM-DD'), 'We are looking for a finance manager to oversee our financial operations.', 'Bob Smith', 120000,'AVAILABLE', 103, 102, 104);
+EXEC JOBPOST_DETAILS('IT Support Specialist', TO_DATE('2022-02-20', 'YYYY-MM-DD'), 'We are seeking an IT support specialist to assist our employees with technical issues.', 'Bob Smith',130000, 'AVAILABLE', 104, 101, 105);
+EXEC JOBPOST_DETAILS('Sales Manager', TO_DATE('2022-03-20', 'YYYY-MM-DD'), 'We are seeking an experienced sales manager to lead our team and drive sales growth.', 'Bob Smith', 4000,'AVAILABLE', 105, 102, 105);
+EXEC JOBPOST_DETAILS('Project Manager', TO_DATE('2022-03-10', 'YYYY-MM-DD'), 'We are looking for a skilled project manager to oversee our projects and ensure they are completed on time and within budget.', 'Bob Smith',140000, 'AVAILABLE', 106, 103, 101);
+EXEC JOBPOST_DETAILS('HR Manager', TO_DATE('2022-03-01', 'YYYY-MM-DD'), 'We are looking for an experienced HR manager to oversee our HR department and manage employee relations.', 'Bob Smith', 700000,'AVAILABLE', 108, 103, 103);
+
+/
 
 -------- Inserting data into the table Applications ------------------
 
-INSERT INTO APPLICATIONS(Application_ID, Current_Status, Application_Date, Job_Post_ID, User_ID)
-select 321, 'APPLIED', TO_DATE('2023-03-23', 'YYYY-MM-DD'), 101,105 from dual UNION ALL
-select 322, 'REJECTED', TO_DATE('2023-02-10', 'YYYY-MM-DD'),  101, 102 from dual union all
-select 323, 'HIRED', TO_DATE('2023-02-06', 'YYYY-MM-DD'),  102, 102 from dual union all
-select 324, 'INTERVIEW_SCHEDULED', TO_DATE('2023-02-10', 'YYYY-MM-DD'),  105, 105 from dual union all
-select 325, 'INTERVIEW_SCHEDULED', TO_DATE('2023-01-09', 'YYYY-MM-DD'),  103, 102 from dual union all
-select 326, 'APPLIED', TO_DATE('2023-01-24', 'YYYY-MM-DD'),  103, 105 from dual union all
-select 327, 'HIRED', TO_DATE('2023-02-22', 'YYYY-MM-DD'),  104, 105 from dual union all
-select 328, 'APPLIED', TO_DATE('2022-12-30', 'YYYY-MM-DD'),  106, 102 from dual union all
-select 329, 'APPLIED', TO_DATE('2023-02-21', 'YYYY-MM-DD'),  106, 104 from dual union all
-select 330, 'APPLIED', TO_DATE('2023-02-09', 'YYYY-MM-DD'),  106, 106 from dual UNION ALL
-select 331, 'INTERVIEW_SCHEDULED', TO_DATE('2023-01-10', 'YYYY-MM-DD'),  101, 101 from dual union all
-select 332, 'HIRED', TO_DATE('2023-02-12', 'YYYY-MM-DD'),  101, 106 from dual;
+create or replace PROCEDURE APPLICATION_DETAILS(Current_Status IN VARCHAR2, Application_Date IN DATE, Job_Post_ID IN NUMBER,User_ID IN NUMBER)
+	AS
+	BEGIN
+	dbms_output.put_line('----------------------------------------------------------');
+	INSERT INTO APPLICATIONS(Current_Status, Application_Date, Job_Post_ID, User_ID) VALUES (Current_Status, Application_Date, Job_Post_ID, User_ID);
+	dbms_output.put_line('Row inserted into APPLICATIONS Table');
+	dbms_output.put_line('----------------------------------------------------------');
+	commit;
+	exception
+		when dup_val_on_index then
+		dbms_output.put_line('Duplicate Value Found in APPLICATIONS table! Insert Different Value');
+		when others then
+		dbms_output.put_line('Error while inserting data into APPLICATIONS Table');
+		rollback;
+			dbms_output.put_line('The error encountered is: ');
+			dbms_output.put_line(dbms_utility.format_error_stack);
+			dbms_output.put_line('----------------------------------------------------------');
+	end APPLICATION_DETAILS;
+    /
+    
+EXEC APPLICATION_DETAILS('APPLIED', TO_DATE('2023-03-23', 'YYYY-MM-DD'), 101,105);
+EXEC APPLICATION_DETAILS('REJECTED', TO_DATE('2023-02-10', 'YYYY-MM-DD'),  101, 102);
+EXEC APPLICATION_DETAILS('HIRED', TO_DATE('2023-02-06', 'YYYY-MM-DD'),  102, 102);
+EXEC APPLICATION_DETAILS('INTERVIEW_SCHEDULED', TO_DATE('2023-02-10', 'YYYY-MM-DD'),  105, 105);
+EXEC APPLICATION_DETAILS('INTERVIEW_SCHEDULED', TO_DATE('2023-01-09', 'YYYY-MM-DD'),  103, 102);
+EXEC APPLICATION_DETAILS('APPLIED', TO_DATE('2023-01-24', 'YYYY-MM-DD'),  103, 105);
+EXEC APPLICATION_DETAILS('HIRED', TO_DATE('2023-02-22', 'YYYY-MM-DD'),  104, 105);
+EXEC APPLICATION_DETAILS('APPLIED', TO_DATE('2022-12-30', 'YYYY-MM-DD'),  106, 102);
+EXEC APPLICATION_DETAILS('APPLIED', TO_DATE('2023-02-21', 'YYYY-MM-DD'),  106, 104);
+EXEC APPLICATION_DETAILS('APPLIED', TO_DATE('2023-02-09', 'YYYY-MM-DD'),  106, 106);
+EXEC APPLICATION_DETAILS('INTERVIEW_SCHEDULED', TO_DATE('2023-01-10', 'YYYY-MM-DD'),  101, 101);
+EXEC APPLICATION_DETAILS('APPLIED', TO_DATE('2023-02-09', 'YYYY-MM-DD'),  106, 106);
+/
 
 -------- Inserting data into the table Application Tracking ------------------
 
