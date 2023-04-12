@@ -229,50 +229,138 @@ END;
 
 -------- Inserting data into the table Job Location ----------------
 
-INSERT INTO Job_Location(Job_Location_Id, Country, States, City)
- select 101, 'United States', 'California', 'San Francisco' from dual union all
- select 102, 'United States', 'California', 'Los Angeles' from dual union all
- select 103, 'United States', 'New York', 'New York' from dual union all
- select 104, 'United States', 'Texas', 'Austin' from dual union all
- select 105, 'United States', 'Texas', 'Houston' from dual union all
- select 106, 'United States', 'Washington', 'Seattle' from dual union all
- select 107, 'United States', 'Illinois', 'Chicago' from dual union all
- select 108, 'United States', 'Georgia', 'Atlanta' from dual union all
- select 109, 'United States', 'Colorado', 'Denver' from dual union all
- select 110, 'United States', 'Florida', 'Miami' from dual;
+create or replace PROCEDURE JOB_LOCATION_DETAILS(Country in VARCHAR2,States in VARCHAR2, City in VARCHAR2)
+	AS
+	BEGIN
+	dbms_output.put_line('----------------------------------------------------------');
+	INSERT INTO JOB_LOCATION(Country,States, City) VALUES (Country,States, City);
+	dbms_output.put_line('Row inserted into JOB_LOCATION Table');
+	dbms_output.put_line('----------------------------------------------------------');
+	commit;
+	exception
+		when dup_val_on_index then
+		dbms_output.put_line('Duplicate Value Found in JOB_LOCATION table! Insert Different Value');
+		when others then
+		dbms_output.put_line('Error while inserting data into JOB_LOCATION Table');
+		rollback;
+			dbms_output.put_line('The error encountered is: ');
+			dbms_output.put_line(dbms_utility.format_error_stack);
+			dbms_output.put_line('----------------------------------------------------------');
+	end JOB_LOCATION_DETAILS;
+/  
+
+EXEC JOB_LOCATION_DETAILS('United States', 'California', 'San Francisco');
+EXEC JOB_LOCATION_DETAILS('United States', 'California', 'Los Angeles');
+EXEC JOB_LOCATION_DETAILS('United States', 'New York', 'New York');
+EXEC JOB_LOCATION_DETAILS('United States', 'Texas', 'Austin');
+EXEC JOB_LOCATION_DETAILS('United States', 'Texas', 'Houston');
+EXEC JOB_LOCATION_DETAILS('United States', 'Washington', 'Seattle');
+EXEC JOB_LOCATION_DETAILS('United States', 'Illinois', 'Chicago');
+EXEC JOB_LOCATION_DETAILS('United States', 'Georgia', 'Atlanta');
+EXEC JOB_LOCATION_DETAILS('United States', 'Colorado', 'Denver');
+EXEC JOB_LOCATION_DETAILS('United States', 'Florida', 'Miami');
+/
  
 -------- Inserting data into the table Job Category ------------------
- 
-INSERT INTO Job_Category(Job_Category_ID, Job_Type)
- select 101, 'ONSITE' from dual union all
- select 102, 'REMOTE' from dual union all
- select 103, 'HYBRID' from dual;
+create or replace PROCEDURE JOB_CATEGORY_DETAILS(Job_Type in VARCHAR2)
+	AS
+	BEGIN
+	dbms_output.put_line('----------------------------------------------------------');
+	INSERT INTO JOB_CATEGORY(Job_Type) VALUES (Job_Type);
+	dbms_output.put_line('Row inserted into Job_Category Table');
+	dbms_output.put_line('----------------------------------------------------------');
+	commit;
+	exception
+		when dup_val_on_index then
+		dbms_output.put_line('Duplicate Value Found in Job_Category table! Insert Different Value');
+		when others then
+		dbms_output.put_line('Error while inserting data into Job_Category Table');
+		rollback;
+			dbms_output.put_line('The error encountered is: ');
+			dbms_output.put_line(dbms_utility.format_error_stack);
+			dbms_output.put_line('----------------------------------------------------------');
+	end JOB_CATEGORY_DETAILS;
+ /
+EXEC JOB_CATEGORY_DETAILS('ONSITE');
+EXEC JOB_CATEGORY_DETAILS('REMOTE');
+EXEC JOB_CATEGORY_DETAILS('HYBRID');
+/
  
 -------- Inserting data into the table Company ------------------
  
-INSERT INTO Company(Company_ID, Company_Name, Company_Description, Industy_Type, Company_Size)
- select 101, 'TechSoft', 'TechSoft is a software company.', 'Technology', 150 from dual union all
- select 102, 'FoodMart', 'FoodMart is a supermarket chain.', 'Retail', 500 from dual union all
- select 103, 'GreenEnergy', 'GreenEnergy is an energy company.', 'Energy', 200 from dual union all
- select 104, 'SwiftBank', 'SwiftBank is a financial services provider.', 'Banking', 300 from dual union all
- select 105, 'MediCare', 'MediCare is a healthcare provider.', 'Healthcare', 350 from dual union all
- select 106, 'ABC Corp', 'ABC Corp is software company', 'Technology', 1000 from dual union all
- select 107, 'EduCenter', 'EduCenter is an educational services provider.', 'Education', 75 from dual;
+create or replace PROCEDURE COMPANY_DETAILS(Company_Name in VARCHAR2, Company_Description in VARCHAR2,
+Industy_Type IN VARCHAR2, Company_Size Number)
+	AS
+	BEGIN
+	dbms_output.put_line('----------------------------------------------------------');
+	INSERT INTO COMPANY(Company_Name, Company_Description,Industy_Type,Company_Size) VALUES (Company_Name,Company_Description,Industy_Type, Company_Size);
+	dbms_output.put_line('Row inserted into COMPANY Table');
+	dbms_output.put_line('----------------------------------------------------------');
+	commit;
+	exception
+		when dup_val_on_index then
+		dbms_output.put_line('Duplicate Value Found in COMPANY table! Insert Different Value');
+		when others then
+		dbms_output.put_line('Error while inserting data into COMPANY Table');
+		rollback;
+			dbms_output.put_line('The error encountered is: ');
+			dbms_output.put_line(dbms_utility.format_error_stack);
+			dbms_output.put_line('----------------------------------------------------------');
+	end COMPANY_DETAILS;
+    /
+
+EXEC COMPANY_DETAILS('TechSoft', 'TechSoft is a software company.', 'Technology', 150);
+EXEC COMPANY_DETAILS('FoodMart', 'FoodMart is a supermarket chain.', 'Retail', 500);
+EXEC COMPANY_DETAILS('GreenEnergy', 'GreenEnergy is an energy company.', 'Energy', 200);
+EXEC COMPANY_DETAILS('SwiftBank', 'SwiftBank is a financial services provider.', 'Banking', 300);
+EXEC COMPANY_DETAILS('MediCare', 'MediCare is a healthcare provider.', 'Healthcare', 350);
+EXEC COMPANY_DETAILS('ABC Corp', 'ABC Corp is software company', 'Technology', 1000);
+EXEC COMPANY_DETAILS('EduCenter', 'EduCenter is an educational services provider.', 'Education', 75);
+EXEC COMPANY_DETAILS('Brighter Tomorrow Foundation','Brighter Tomorrow Foundation is a nonprofit organization that supports children in need by providing education, healthcare, and other essential services.','Nonprofit',100);
+EXEC COMPANY_DETAILS('Unity Technologies', 'Unity Technologies is a software company that develops tools and platforms for creating and deploying video games and other interactive content.', 'Gaming',500);
+EXEC COMPANY_DETAILS('ClearView Insurance', 'ClearView Insurance offers a range of insurance products for individuals and businesses, including auto, home, and liability insurance.', 'Insurance',300);
+EXEC COMPANY_DETAILS('Ocean Blue Seafood', 'Ocean Blue Seafood is a seafood distributor that supplies restaurants and supermarkets with fresh, sustainably sourced seafood.', 'Food and Beverage', 50);
+EXEC COMPANY_DETAILS('Stellar Analytics', 'Stellar Analytics is a data analysis firm that helps businesses make informed decisions based on their data.', 'Analytics', 1000);
+EXEC COMPANY_DETAILS('BluePeak Inc', 'BluePeak is a technology company specializing in cloud computing solutions for businesses of all sizes.', 'Information Technology', 500);
+EXEC COMPANY_DETAILS('Summit Pharmaceuticals', 'Summit Pharmaceuticals is a pharmaceutical company that develops and produces innovative drugs for a variety of medical conditions.', 'Pharmaceuticals', 500);
+EXEC COMPANY_DETAILS('GreenLeaf Landscaping', 'GreenLeaf Landscaping provides landscaping and lawn care services to residential and commercial customers.', 'Landscaping', 50);
+EXEC COMPANY_DETAILS('Red River Consulting', 'Red River Consulting provides strategic consulting services to businesses across a range of industries, helping them achieve their goals', 'Retail', 60);
+/
  
 -------- Inserting data into the table Skillset ------------------
  
-INSERT INTO Skillset(Skillset_ID, Skill_Name, Skill_Type)
-select 101, 'Java', 'TECHNICAL' from dual union all
-select 102, 'Communication', 'SOFTSKILLS' from dual union all
-select 103, 'Public Speaking', 'SOFTSKILLS' from dual union all
-select 104, 'Python', 'TECHNICAL' from dual union all
-select 105, 'MySQL', 'TECHNICAL' from dual union all
-select 106, 'Problem Solving', 'SOFTSKILLS' from dual union all
-select 107, 'Leadership', 'SOFTSKILLS' from dual union all
-select 108, 'R Studio', 'TECHNICAL' from dual union all
-select 109, 'Teamwork', 'SOFTSKILLS' from dual union all
-select 110, 'Project Management', 'SOFTSKILLS' from dual union all
-select 111, 'Data Analysis', 'TECHNICAL' from dual;
+create or replace PROCEDURE SKILLSET_DETAILS(Skill_Name in VARCHAR2, Skill_Type in VARCHAR2)
+	AS
+	BEGIN
+	dbms_output.put_line('----------------------------------------------------------');
+	INSERT INTO SKILLSET(Skill_Name, Skill_Type) VALUES (Skill_Name, Skill_Type);
+	dbms_output.put_line('Row inserted into Job_Category Table');
+	dbms_output.put_line('----------------------------------------------------------');
+	commit;
+	exception
+		when dup_val_on_index then
+		dbms_output.put_line('Duplicate Value Found in Job_Category table! Insert Different Value');
+		when others then
+		dbms_output.put_line('Error while inserting data into Job_Category Table');
+		rollback;
+			dbms_output.put_line('The error encountered is: ');
+			dbms_output.put_line(dbms_utility.format_error_stack);
+			dbms_output.put_line('----------------------------------------------------------');
+	end SKILLSET_DETAILS;
+ 
+/
+EXEC SKILLSET_DETAILS('Java', 'TECHNICAL');
+EXEC SKILLSET_DETAILS('Communication', 'SOFTSKILLS');
+EXEC SKILLSET_DETAILS('Public Speaking', 'SOFTSKILLS');
+EXEC SKILLSET_DETAILS('Python', 'TECHNICAL');
+EXEC SKILLSET_DETAILS('MySQL', 'TECHNICAL');
+EXEC SKILLSET_DETAILS('Problem Solving', 'SOFTSKILLS');
+EXEC SKILLSET_DETAILS('Leadership', 'SOFTSKILLS');
+EXEC SKILLSET_DETAILS('R Studio', 'TECHNICAL');
+EXEC SKILLSET_DETAILS('Teamwork', 'SOFTSKILLS');
+EXEC SKILLSET_DETAILS('Project Management', 'SOFTSKILLS');
+EXEC SKILLSET_DETAILS('Data Analysis', 'TECHNICAL');
+/
  
 -------- Inserting data into the table Users ------------------
 
