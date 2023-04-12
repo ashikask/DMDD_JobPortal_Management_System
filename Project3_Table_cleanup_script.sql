@@ -519,15 +519,9 @@ create or replace PROCEDURE APPLICATION_TRACKING_DETAILS(Status IN VARCHAR2, Cha
 			dbms_output.put_line(dbms_utility.format_error_stack);
 			dbms_output.put_line('----------------------------------------------------------');
 	end APPLICATION_TRACKING_DETAILS;
-    
+/    
 
-EXEC APPLICATION_TRACKING_DETAILS('APPLIED', TO_DATE('2023-03-23', 'YYYY-MM-DD'), 101,105);
-EXEC APPLICATION_TRACKING_DETAILS('REJECTED', TO_DATE('2023-02-10', 'YYYY-MM-DD'),  101, 102);
-EXEC APPLICATION_TRACKING_DETAILS('HIRED', TO_DATE('2023-02-06', 'YYYY-MM-DD'),  102, 102);
-EXEC APPLICATION_TRACKING_DETAILS('INTERVIEW_SCHEDULED', TO_DATE('2023-02-10', 'YYYY-MM-DD'),  105, 105);
-EXEC APPLICATION_TRACKING_DETAILS('INTERVIEW_SCHEDULED', TO_DATE('2023-01-09', 'YYYY-MM-DD'),  103, 102);
-EXEC APPLICATION_TRACKING_DETAILS('APPLIED', TO_DATE('2023-01-24', 'YYYY-MM-DD'),  103, 105);
-EXEC APPLICATION_TRACKING_DETAILS('HIRED', TO_DATE('2023-02-22', 'YYYY-MM-DD'),  104, 105);
+
 EXEC APPLICATION_TRACKING_DETAILS('APPLIED', TO_DATE('3/23/2023', 'MM/DD/YYYY'), user, 321);
 EXEC APPLICATION_TRACKING_DETAILS('APPLIED', TO_DATE('2/10/2023', 'MM/DD/YYYY'), user, 322);
 EXEC APPLICATION_TRACKING_DETAILS('INTERVIEW_SCHEDULED', TO_DATE('2/23/2023', 'MM/DD/YYYY'), user, 322 );
@@ -726,9 +720,19 @@ EXEC JOB_EDUCATION_REQ_DETAILS(108, 101);
 EXEC JOB_EDUCATION_REQ_DETAILS(108, 106);
 /
 
+----- Create trigger for application tracking  ------
+
+create or replace trigger app_track_count
+after update on applications
+for each row
+when (new.current_status <> old.current_status)
+Begin 
+insert into application_tracking( STATUS, CHANGED_ON, MODIFIED_BY, APPLICATION_ID)
+values (:new.current_status, sysdate, user, :new.application_id );
+end;
+/
 
 
-commit;
 
 -------------- Creating Views -----------------
 
