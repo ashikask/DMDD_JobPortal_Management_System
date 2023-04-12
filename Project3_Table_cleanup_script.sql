@@ -501,120 +501,235 @@ EXEC APPLICATION_DETAILS('APPLIED', TO_DATE('2023-02-09', 'YYYY-MM-DD'),  106, 1
 
 -------- Inserting data into the table Application Tracking ------------------
 
-INSERT INTO APPLICATION_TRACKING (APPLICATION_TRACKING_ID, STATUS, CHANGED_ON, MODIFIED_BY, APPLICATION_ID)
-select 401, 'APPLIED', TO_DATE('3/23/2023', 'MM/DD/YYYY'), user, 321 from dual UNION ALL
-select 402, 'APPLIED', TO_DATE('2/10/2023', 'MM/DD/YYYY'), user, 322 from dual UNION ALL
-select 403, 'INTERVIEW_SCHEDULED', TO_DATE('2/23/2023', 'MM/DD/YYYY'), user, 322 from dual UNION ALL
-select 404, 'REJECTED', TO_DATE('3/15/2023', 'MM/DD/YYYY'), user, 322 from dual UNION ALL
-select 405, 'APPLIED', TO_DATE('1/13/2023', 'MM/DD/YYYY'), 'Jane Doe', 323 from dual UNION ALL
-select 406, 'INTERVIEW_SCHEDULED', TO_DATE('1/28/2023', 'MM/DD/YYYY'), user, 323 from dual UNION ALL
-select 407, 'HIRED', TO_DATE('2/6/2023', 'MM/DD/YYYY'), user, 323 from dual UNION ALL
-select 408, 'APPLIED', TO_DATE('2/1/2023', 'MM/DD/YYYY'), 'Sarah Kim', 324 from dual UNION ALL
-select 409, 'INTERVIEW_SCHEDULED', TO_DATE('2/10/2023', 'MM/DD/YYYY'), user, 324 from dual UNION ALL
-select 410, 'APPLIED', TO_DATE('1/1/2023', 'MM/DD/YYYY'), 'Jane Doe', 325 from dual UNION ALL
-select 411, 'INTERVIEW_SCHEDULED', TO_DATE('1/9/2023', 'MM/DD/YYYY'), user, 325 from dual UNION ALL
-select 412, 'APPLIED', TO_DATE('1/24/2023', 'MM/DD/YYYY'), 'Sarah Kim', 326 from dual UNION ALL
-select 413, 'APPLIED', TO_DATE('12/30/2022', 'MM/DD/YYYY'), 'Jane Doe', 328 from dual UNION ALL
-select 414, 'APPLIED', TO_DATE('02/21/2023', 'MM/DD/YYYY'), 'David Lee', 329 from dual UNION ALL
-select 415, 'APPLIED', TO_DATE('02/09/2023', 'MM/DD/YYYY'), 'Emily Wang', 330 from dual UNION ALL
-select 416, 'APPLIED', TO_DATE('11/11/2022', 'MM/DD/YYYY'), 'John Doe', 331 from dual UNION ALL
-select 417, 'INTERVIEW_SCHEDULED', TO_DATE('01/10/2023', 'MM/DD/YYYY'), user, 331 from dual UNION ALL
-select 418, 'APPLIED', TO_DATE('12/17/2022', 'MM/DD/YYYY'), 'Sarah Kim', 327 from dual UNION ALL
-select 419, 'INTERVIEW_SCHEDULED', TO_DATE('01/12/2023', 'MM/DD/YYYY'), user, 327 from dual UNION ALL
-select 420, 'HIRED', TO_DATE('02/22/2023', 'MM/DD/YYYY'), user, 327 from dual UNION ALL
-select 421, 'APPLIED', TO_DATE('08/09/2022', 'MM/DD/YYYY'), 'Emily Wang', 332 from dual UNION ALL
-select 422, 'INTERVIEW_SCHEDULED', TO_DATE('08/12/2022', 'MM/DD/YYYY'), user, 332 from dual UNION ALL
-select 423, 'HIRED', TO_DATE('02/12/2023', 'MM/DD/YYYY'), user, 332 from dual;
+create or replace PROCEDURE APPLICATION_TRACKING_DETAILS(Status IN VARCHAR2, Changed_On IN DATE, Modified_By IN VARCHAR2,Application_ID IN NUMBER)
+	AS
+	BEGIN
+	dbms_output.put_line('----------------------------------------------------------');
+	INSERT INTO APPLICATION_TRACKING(Status, Changed_On, Modified_By, Application_ID) VALUES (Status, Changed_On, Modified_By, Application_ID);
+	dbms_output.put_line('Row inserted into APPLICATION_TRACKING Table');
+	dbms_output.put_line('----------------------------------------------------------');
+	commit;
+	exception
+		when dup_val_on_index then
+		dbms_output.put_line('Duplicate Value Found in APPLICATION_TRACKING table! Insert Different Value');
+		when others then
+		dbms_output.put_line('Error while inserting data into APPLICATION_TRACKING Table');
+		rollback;
+			dbms_output.put_line('The error encountered is: ');
+			dbms_output.put_line(dbms_utility.format_error_stack);
+			dbms_output.put_line('----------------------------------------------------------');
+	end APPLICATION_TRACKING_DETAILS;
+    
+
+EXEC APPLICATION_TRACKING_DETAILS('APPLIED', TO_DATE('2023-03-23', 'YYYY-MM-DD'), 101,105);
+EXEC APPLICATION_TRACKING_DETAILS('REJECTED', TO_DATE('2023-02-10', 'YYYY-MM-DD'),  101, 102);
+EXEC APPLICATION_TRACKING_DETAILS('HIRED', TO_DATE('2023-02-06', 'YYYY-MM-DD'),  102, 102);
+EXEC APPLICATION_TRACKING_DETAILS('INTERVIEW_SCHEDULED', TO_DATE('2023-02-10', 'YYYY-MM-DD'),  105, 105);
+EXEC APPLICATION_TRACKING_DETAILS('INTERVIEW_SCHEDULED', TO_DATE('2023-01-09', 'YYYY-MM-DD'),  103, 102);
+EXEC APPLICATION_TRACKING_DETAILS('APPLIED', TO_DATE('2023-01-24', 'YYYY-MM-DD'),  103, 105);
+EXEC APPLICATION_TRACKING_DETAILS('HIRED', TO_DATE('2023-02-22', 'YYYY-MM-DD'),  104, 105);
+EXEC APPLICATION_TRACKING_DETAILS('APPLIED', TO_DATE('3/23/2023', 'MM/DD/YYYY'), user, 321);
+EXEC APPLICATION_TRACKING_DETAILS('APPLIED', TO_DATE('2/10/2023', 'MM/DD/YYYY'), user, 322);
+EXEC APPLICATION_TRACKING_DETAILS('INTERVIEW_SCHEDULED', TO_DATE('2/23/2023', 'MM/DD/YYYY'), user, 322 );
+EXEC APPLICATION_TRACKING_DETAILS('REJECTED', TO_DATE('3/15/2023', 'MM/DD/YYYY'), user, 322);
+EXEC APPLICATION_TRACKING_DETAILS('APPLIED', TO_DATE('1/13/2023', 'MM/DD/YYYY'), 'Jane Doe', 323);
+EXEC APPLICATION_TRACKING_DETAILS('INTERVIEW_SCHEDULED', TO_DATE('1/28/2023', 'MM/DD/YYYY'), user, 323);
+EXEC APPLICATION_TRACKING_DETAILS('HIRED', TO_DATE('2/6/2023', 'MM/DD/YYYY'), user, 323); 
+EXEC APPLICATION_TRACKING_DETAILS('APPLIED', TO_DATE('2/1/2023', 'MM/DD/YYYY'), 'Sarah Kim', 324);
+EXEC APPLICATION_TRACKING_DETAILS('INTERVIEW_SCHEDULED', TO_DATE('2/10/2023', 'MM/DD/YYYY'), user, 324);
+EXEC APPLICATION_TRACKING_DETAILS('APPLIED', TO_DATE('1/1/2023', 'MM/DD/YYYY'), 'Jane Doe', 325);
+EXEC APPLICATION_TRACKING_DETAILS('INTERVIEW_SCHEDULED', TO_DATE('1/9/2023', 'MM/DD/YYYY'), user, 325);
+EXEC APPLICATION_TRACKING_DETAILS('APPLIED', TO_DATE('1/24/2023', 'MM/DD/YYYY'), 'Sarah Kim', 326);
+EXEC APPLICATION_TRACKING_DETAILS('APPLIED', TO_DATE('12/30/2022', 'MM/DD/YYYY'), 'Jane Doe', 328);
+EXEC APPLICATION_TRACKING_DETAILS('APPLIED', TO_DATE('02/21/2023', 'MM/DD/YYYY'), 'David Lee', 329);
+EXEC APPLICATION_TRACKING_DETAILS('APPLIED', TO_DATE('02/09/2023', 'MM/DD/YYYY'), 'Emily Wang', 330);
+EXEC APPLICATION_TRACKING_DETAILS('APPLIED', TO_DATE('11/11/2022', 'MM/DD/YYYY'), 'John Doe', 331);
+EXEC APPLICATION_TRACKING_DETAILS('INTERVIEW_SCHEDULED', TO_DATE('01/10/2023', 'MM/DD/YYYY'), user, 331);
+EXEC APPLICATION_TRACKING_DETAILS('APPLIED', TO_DATE('12/17/2022', 'MM/DD/YYYY'), 'Sarah Kim', 327);
+EXEC APPLICATION_TRACKING_DETAILS('INTERVIEW_SCHEDULED', TO_DATE('01/12/2023', 'MM/DD/YYYY'), user, 327);
+EXEC APPLICATION_TRACKING_DETAILS('HIRED', TO_DATE('02/22/2023', 'MM/DD/YYYY'), user, 327);
+EXEC APPLICATION_TRACKING_DETAILS('APPLIED', TO_DATE('08/09/2022', 'MM/DD/YYYY'), 'Emily Wang', 332);
+EXEC APPLICATION_TRACKING_DETAILS('INTERVIEW_SCHEDULED', TO_DATE('08/12/2022', 'MM/DD/YYYY'), user, 332);
+EXEC APPLICATION_TRACKING_DETAILS('HIRED', TO_DATE('02/12/2023', 'MM/DD/YYYY'), user, 332);
+
+
+
+ 
+ select * from APPLICATION_TRACKING;
 
 -------- Inserting data into the table Job Post Skill ------------------
 
-INSERT INTO JOB_POST_SKILL(JobPostSkill_ID, Skillset_ID)
-select 101, 101 from dual UNION ALL
-select 101, 104 from dual UNION ALL
-select 101, 105 from dual UNION ALL
-select 102, 102 from dual UNION ALL
-select 102, 103 from dual UNION ALL
-select 102, 107 from dual UNION ALL
-select 103, 105 from dual UNION ALL
-select 103, 104 from dual UNION ALL
-select 103, 108 from dual UNION ALL
-select 104, 110 from dual UNION ALL
-select 104, 111 from dual UNION ALL
-select 104, 103 from dual UNION ALL
-select 105, 102 from dual UNION ALL
-select 105, 103 from dual UNION ALL
-select 106, 109 from dual UNION ALL
-select 106, 103 from dual UNION ALL
-select 106, 102 from dual UNION ALL
-select 107, 110 from dual UNION ALL
-select 107, 102 from dual UNION ALL
-select 108, 110 from dual UNION ALL
-select 108, 102 from dual UNION ALL
-select 108, 103 from dual;
 
--------- Inserting data into the table User skill ------------------
+create or replace PROCEDURE JOB_POST_SKILL_DETAILS(JobPostSkill_ID IN NUMBER, SkillSet_ID IN NUMBER)
+	AS
+	BEGIN
+	dbms_output.put_line('----------------------------------------------------------');
+	INSERT INTO JOB_POST_SKILL(JobPostSkill_ID, SkillSet_ID) VALUES (JobPostSkill_ID,SkillSet_ID);
+	dbms_output.put_line('Row inserted into JOB_POST_SKILL Table');
+	dbms_output.put_line('----------------------------------------------------------');
+	commit;
+	exception
+		when dup_val_on_index then
+		dbms_output.put_line('Duplicate Value Found in JOB_POST_SKILL table! Insert Different Value');
+		when others then
+		dbms_output.put_line('Error while inserting data into JOB_POST_SKILL Table');
+		rollback;
+			dbms_output.put_line('The error encountered is: ');
+			dbms_output.put_line(dbms_utility.format_error_stack);
+			dbms_output.put_line('----------------------------------------------------------');
+	end JOB_POST_SKILL_DETAILS;
+    /
 
-INSERT INTO User_Skill(User_ID, Skillset_ID)
-select 101, 101 from dual UNION ALL
-select 101, 104 from dual UNION ALL
-select 101, 105 from dual UNION ALL
-select 102, 101 from dual UNION ALL
-select 102, 104 from dual UNION ALL
-select 102, 105 from dual UNION ALL
-select 102, 102 from dual UNION ALL
-select 102, 103 from dual UNION ALL
-select 102, 107 from dual UNION ALL
-select 104, 109 from dual UNION ALL
-select 104, 103 from dual UNION ALL
-select 104, 102 from dual UNION ALL
-select 105, 105 from dual UNION ALL
-select 105, 102 from dual UNION ALL
-select 105, 103 from dual UNION ALL
-select 105, 110 from dual UNION ALL
-select 105, 111 from dual UNION ALL
-select 106, 109 from dual UNION ALL
-select 106, 103 from dual UNION ALL
-select 106, 103 from dual UNION ALL
-select 106, 101 from dual UNION ALL
-select 106, 104 from dual;
+EXEC JOB_POST_SKILL_DETAILS( 101, 101);
+EXEC JOB_POST_SKILL_DETAILS( 101, 104 );
+EXEC JOB_POST_SKILL_DETAILS(101, 105);
+EXEC JOB_POST_SKILL_DETAILS(102, 102);
+EXEC JOB_POST_SKILL_DETAILS(102, 103);
+EXEC JOB_POST_SKILL_DETAILS(103, 105);
+EXEC JOB_POST_SKILL_DETAILS( 103, 104);
+EXEC JOB_POST_SKILL_DETAILS(103, 108);
+EXEC JOB_POST_SKILL_DETAILS( 104, 110);
+EXEC JOB_POST_SKILL_DETAILS(104, 111);
+EXEC JOB_POST_SKILL_DETAILS(104, 103);
+EXEC JOB_POST_SKILL_DETAILS(105, 102);
+EXEC JOB_POST_SKILL_DETAILS( 105, 103);
+EXEC JOB_POST_SKILL_DETAILS(106, 109);
+EXEC JOB_POST_SKILL_DETAILS( 106, 103); 
+EXEC JOB_POST_SKILL_DETAILS(106, 102);
+EXEC JOB_POST_SKILL_DETAILS( 107, 110);
+EXEC JOB_POST_SKILL_DETAILS(107, 102);
+EXEC JOB_POST_SKILL_DETAILS(108, 110);
+EXEC JOB_POST_SKILL_DETAILS(108, 102);
+EXEC JOB_POST_SKILL_DETAILS(  108, 103 );
+/
+
+
+-------- Inserting data into the table User Skill ------------------
+
+
+create or replace PROCEDURE USER_SKILL_DETAILS(User_ID IN NUMBER, Skillset_ID IN NUMBER)
+	AS
+	BEGIN
+	dbms_output.put_line('----------------------------------------------------------');
+	INSERT INTO USER_SKILL(User_ID, Skillset_ID) VALUES (User_ID, Skillset_ID);
+	dbms_output.put_line('Row inserted into USER_SKILL Table');
+	dbms_output.put_line('----------------------------------------------------------');
+	commit;
+	exception
+		when dup_val_on_index then
+		dbms_output.put_line('Duplicate Value Found in USER_SKILL table! Insert Different Value');
+		when others then
+		dbms_output.put_line('Error while inserting data into USER_SKILL Table');
+		rollback;
+			dbms_output.put_line('The error encountered is: ');
+			dbms_output.put_line(dbms_utility.format_error_stack);
+			dbms_output.put_line('----------------------------------------------------------');
+	end USER_SKILL_DETAILS;
+    /
+
+
+EXEC USER_SKILL_DETAILS(101, 101);
+EXEC USER_SKILL_DETAILS(101, 104);
+EXEC USER_SKILL_DETAILS(101, 105);
+EXEC USER_SKILL_DETAILS(102, 101);
+EXEC USER_SKILL_DETAILS(102, 104);
+EXEC USER_SKILL_DETAILS(102, 105);
+EXEC USER_SKILL_DETAILS(102, 102);
+EXEC USER_SKILL_DETAILS(102, 103);
+EXEC USER_SKILL_DETAILS(102, 107);
+EXEC USER_SKILL_DETAILS(104, 109);
+EXEC USER_SKILL_DETAILS(104, 103);
+EXEC USER_SKILL_DETAILS(104, 102);
+EXEC USER_SKILL_DETAILS(105, 105);
+EXEC USER_SKILL_DETAILS(105, 102);
+EXEC USER_SKILL_DETAILS(105, 103);
+EXEC USER_SKILL_DETAILS(105, 110);
+EXEC USER_SKILL_DETAILS(105, 111);
+EXEC USER_SKILL_DETAILS(106, 109);
+EXEC USER_SKILL_DETAILS(106, 103);
+EXEC USER_SKILL_DETAILS(106, 103);
+EXEC USER_SKILL_DETAILS(106, 101);
+EXEC USER_SKILL_DETAILS(106, 104);
+/
 
 -------- Inserting data into the table User Education ------------------
 
-INSERT INTO USER_EDUCATION (Users_ID, DEGREE_ID, START_DATE, END_DATE)
-select 101, 104, TO_DATE('09/4/2020', 'MM/DD/YYYY'), TO_DATE('5/4/2024', 'MM/DD/YYYY') from dual UNION ALL
-select 101, 107, TO_DATE('08/20/2024', 'MM/DD/YYYY'), TO_DATE('6/4/2026', 'MM/DD/YYYY')from dual UNION ALL
-select 102, 104, TO_DATE('09/20/2020', 'MM/DD/YYYY'), TO_DATE('4/30/2024', 'MM/DD/YYYY')from dual UNION ALL
-select 102, 103, TO_DATE('08/13/2024', 'MM/DD/YYYY'), TO_DATE('5/22/2026', 'MM/DD/YYYY')from dual UNION ALL
-select 104, 102, TO_DATE('09/17/2020', 'MM/DD/YYYY'), TO_DATE('4/20/2024', 'MM/DD/YYYY')from dual UNION ALL
-select 105, 104, TO_DATE('09/23/2020', 'MM/DD/YYYY'), TO_DATE('5/17/2024', 'MM/DD/YYYY')from dual UNION ALL
-select 105, 107, TO_DATE('08/29/2024', 'MM/DD/YYYY'), TO_DATE('5/15/2026', 'MM/DD/YYYY')from dual UNION ALL
-select 106, 104, TO_DATE('09/6/2020', 'MM/DD/YYYY'), TO_DATE('4/29/2024', 'MM/DD/YYYY')from dual UNION ALL
-select 106, 101, TO_DATE('08/4/2024', 'MM/DD/YYYY'), TO_DATE('5/17/2026', 'MM/DD/YYYY')from dual;
+create or replace PROCEDURE USER_EDUCATION_DETAILS(Users_ID IN NUMBER, DEGREE_ID IN NUMBER, START_DATE IN DATE, END_DATE IN DATE)
+	AS
+	BEGIN
+	dbms_output.put_line('----------------------------------------------------------');
+	INSERT INTO USER_EDUCATION(Users_ID, DEGREE_ID, START_DATE, END_DATE) VALUES (Users_ID, DEGREE_ID, START_DATE, END_DATE);
+	dbms_output.put_line('Row inserted into USER_EDUCATION Table');
+	dbms_output.put_line('----------------------------------------------------------');
+	commit;
+	exception
+		when dup_val_on_index then
+		dbms_output.put_line('Duplicate Value Found in USER_EDUCATION table! Insert Different Value');
+		when others then
+		dbms_output.put_line('Error while inserting data into USER_EDUCATION Table');
+		rollback;
+			dbms_output.put_line('The error encountered is: ');
+			dbms_output.put_line(dbms_utility.format_error_stack);
+			dbms_output.put_line('----------------------------------------------------------');
+	end USER_EDUCATION_DETAILS;
+    /
+    
 
+EXEC USER_EDUCATION_DETAILS(101, 104,TO_DATE('09/4/2020', 'MM/DD/YYYY'), TO_DATE('5/4/2024', 'MM/DD/YYYY'));
+EXEC USER_EDUCATION_DETAILS(101, 107,TO_DATE('08/20/2024', 'MM/DD/YYYY'), TO_DATE('6/4/2026', 'MM/DD/YYYY'));
+EXEC USER_EDUCATION_DETAILS(102, 104,TO_DATE('09/20/2020', 'MM/DD/YYYY'), TO_DATE('4/30/2024', 'MM/DD/YYYY'));
+EXEC USER_EDUCATION_DETAILS(102, 103,TO_DATE('08/13/2024', 'MM/DD/YYYY'), TO_DATE('5/22/2026', 'MM/DD/YYYY'));
+EXEC USER_EDUCATION_DETAILS(104, 102,TO_DATE('09/17/2020', 'MM/DD/YYYY'), TO_DATE('4/20/2024', 'MM/DD/YYYY'));
+EXEC USER_EDUCATION_DETAILS(105, 104,TO_DATE('09/23/2020', 'MM/DD/YYYY'), TO_DATE('5/17/2024', 'MM/DD/YYYY'));
+EXEC USER_EDUCATION_DETAILS(105, 107, TO_DATE('08/29/2024', 'MM/DD/YYYY'), TO_DATE('5/15/2026', 'MM/DD/YYYY'));
+EXEC USER_EDUCATION_DETAILS(106, 104,TO_DATE('09/6/2020', 'MM/DD/YYYY'), TO_DATE('4/29/2024', 'MM/DD/YYYY'));
+EXEC USER_EDUCATION_DETAILS(106, 101,TO_DATE('08/4/2024', 'MM/DD/YYYY'), TO_DATE('5/17/2026', 'MM/DD/YYYY'));
+/
 -------- Inserting data into the table Job Education ------------------
 
-INSERT INTO JOB_EDUCATION_REQ (JobPost_ID, Degree_ID)
-select 101, 104 from dual UNION ALL
-select 101, 105 from dual UNION ALL
-select 102, 102 from dual UNION ALL
-select 102, 103 from dual UNION ALL
-select 102, 101 from dual UNION ALL
-select 103, 101 from dual UNION ALL
-select 103, 104 from dual UNION ALL
-select 103, 105 from dual UNION ALL
-select 103, 106 from dual UNION ALL
-select 104, 101 from dual UNION ALL
-select 104, 103 from dual UNION ALL
-select 104, 102 from dual UNION ALL
-select 105, 104 from dual UNION ALL
-select 105, 105 from dual UNION ALL
-select 105, 107 from dual UNION ALL
-select 106, 102 from dual UNION ALL
-select 106, 103 from dual UNION ALL
-select 107, 101 from dual UNION ALL
-select 107, 106 from dual UNION ALL
-select 108, 101 from dual UNION ALL
-select 108, 106 from dual;
+create or replace PROCEDURE JOB_EDUCATION_REQ_DETAILS(JobPost_ID IN NUMBER, Degree_ID IN NUMBER)
+	AS
+	BEGIN
+	dbms_output.put_line('----------------------------------------------------------');
+	INSERT INTO JOB_EDUCATION_REQ(JobPost_ID, Degree_ID) VALUES (JobPost_ID, Degree_ID);
+	dbms_output.put_line('Row inserted into JOB_EDUCATION_REQ Table');
+	dbms_output.put_line('----------------------------------------------------------');
+	commit;
+	exception
+		when dup_val_on_index then
+		dbms_output.put_line('Duplicate Value Found in JOB_EDUCATION_REQ table! Insert Different Value');
+		when others then
+		dbms_output.put_line('Error while inserting data into JOB_EDUCATION_REQ Table');
+		rollback;
+			dbms_output.put_line('The error encountered is: ');
+			dbms_output.put_line(dbms_utility.format_error_stack);
+			dbms_output.put_line('----------------------------------------------------------');
+	end JOB_EDUCATION_REQ_DETAILS;
+    /
+    
+EXEC JOB_EDUCATION_REQ_DETAILS(101, 104);
+EXEC JOB_EDUCATION_REQ_DETAILS(101, 105);
+EXEC JOB_EDUCATION_REQ_DETAILS(102, 102);
+EXEC JOB_EDUCATION_REQ_DETAILS(102, 103);
+EXEC JOB_EDUCATION_REQ_DETAILS(102, 101);
+EXEC JOB_EDUCATION_REQ_DETAILS(103, 101);
+EXEC JOB_EDUCATION_REQ_DETAILS(103, 104);
+EXEC JOB_EDUCATION_REQ_DETAILS(103, 105);
+EXEC JOB_EDUCATION_REQ_DETAILS(103, 106);
+EXEC JOB_EDUCATION_REQ_DETAILS(104, 101);
+EXEC JOB_EDUCATION_REQ_DETAILS(104, 103);
+EXEC JOB_EDUCATION_REQ_DETAILS(104, 102);
+EXEC JOB_EDUCATION_REQ_DETAILS(105, 104);
+EXEC JOB_EDUCATION_REQ_DETAILS(105, 105);
+EXEC JOB_EDUCATION_REQ_DETAILS(105, 107);
+EXEC JOB_EDUCATION_REQ_DETAILS(106, 102);
+EXEC JOB_EDUCATION_REQ_DETAILS(106, 103);
+EXEC JOB_EDUCATION_REQ_DETAILS(107, 101);
+EXEC JOB_EDUCATION_REQ_DETAILS(107, 106);
+EXEC JOB_EDUCATION_REQ_DETAILS(108, 101);
+EXEC JOB_EDUCATION_REQ_DETAILS(108, 106);
+/
+
 
 
 commit;
