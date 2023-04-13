@@ -521,41 +521,177 @@ EXEC ONBOADRDING_USER_PACKAGE.USER_EDUCATION_DETAILS(106, 104,TO_DATE('09/6/2020
 EXEC ONBOADRDING_USER_PACKAGE.USER_EDUCATION_DETAILS(106, 101,TO_DATE('08/4/2024', 'MM/DD/YYYY'), TO_DATE('5/17/2026', 'MM/DD/YYYY'));
 /
 
-
+---Using PACKAGE for JOB POST procedures ------
 -------- Inserting data into the table Job Post ------------------
 
-create or replace PROCEDURE JOBPOST_DETAILS(Job_Title in VARCHAR2, Creation_Date in DATE, Job_Description in VARCHAR2,
+CREATE OR REPLACE PACKAGE POST_JOB_PACKAGE AS
+    FUNCTION validate_salary (salary NUMBER) RETURN BOOLEAN;
+    PROCEDURE JOBPOST_DETAILS(Job_Title in VARCHAR2, Creation_Date in DATE, Job_Description in VARCHAR2,
+    Created_By in VARCHAR2, Salary in NUMBER, Hiring_Status in VARCHAR2, Job_Location_Id in NUMBER, Job_Category_ID in NUMBER, Job_Company_Id in NUMBER);
+    PROCEDURE JOB_POST_SKILL_DETAILS(JobPostSkill_ID IN NUMBER, SkillSet_ID IN NUMBER);
+    PROCEDURE JOB_EDUCATION_REQ_DETAILS(JobPost_ID IN NUMBER, Degree_ID IN NUMBER);
+    PROCEDURE Update_Job_Post(job_id in NUMBER, hire_status in VARCHAR2);
+END POST_JOB_PACKAGE;
+/
+
+CREATE OR REPLACE PACKAGE BODY POST_JOB_PACKAGE AS
+
+FUNCTION validate_salary (salary NUMBER)
+RETURN BOOLEAN
+AS
+BEGIN
+    RETURN salary >= 0;
+END;
+
+PROCEDURE JOBPOST_DETAILS(Job_Title in VARCHAR2, Creation_Date in DATE, Job_Description in VARCHAR2,
     Created_By in VARCHAR2, Salary in NUMBER, Hiring_Status in VARCHAR2, Job_Location_Id in NUMBER, Job_Category_ID in NUMBER, Job_Company_Id in NUMBER)
+AS
+BEGIN
+    dbms_output.put_line('----------------------------------------------------------');
+    IF validate_salary(Salary) THEN
+        INSERT INTO JOBPOST(Job_Title, Creation_Date, Job_Description, Created_By, Salary, Hiring_Status, Job_Location_Id, Job_Category_ID, Job_Company_Id) 
+        VALUES (Job_Title, Creation_Date, Job_Description, Created_By, Salary, Hiring_Status, Job_Location_Id, Job_Category_ID, Job_Company_Id);
+        dbms_output.put_line('Row inserted into JOBPOST Table');
+    ELSE
+        dbms_output.put_line('Salary cannot be negative. Insert a different value');
+    END IF;
+    dbms_output.put_line('----------------------------------------------------------');
+    commit;
+    exception
+        when dup_val_on_index then
+            dbms_output.put_line('Duplicate Value Found in JOBPOST table! Insert Different Value');
+        when others then
+            dbms_output.put_line('Error while inserting data into JOBPOST Table');
+            rollback;
+            dbms_output.put_line('The error encountered is: ');
+            dbms_output.put_line(dbms_utility.format_error_stack);
+            dbms_output.put_line('----------------------------------------------------------');
+END JOBPOST_DETAILS;
+    
+    PROCEDURE JOB_POST_SKILL_DETAILS(JobPostSkill_ID IN NUMBER, SkillSet_ID IN NUMBER)
 	AS
 	BEGIN
 	dbms_output.put_line('----------------------------------------------------------');
-	INSERT INTO JOBPOST(Job_Title, Creation_Date, Job_Description, Created_By, Salary, Hiring_Status, Job_Location_Id, Job_Category_ID, Job_Company_Id) 
-    VALUES (Job_Title, Creation_Date, Job_Description, Created_By, Salary, Hiring_Status, Job_Location_Id, Job_Category_ID, Job_Company_Id);
-	dbms_output.put_line('Row inserted into JOBPOST Table');
+	INSERT INTO JOB_POST_SKILL(JobPostSkill_ID, SkillSet_ID) VALUES (JobPostSkill_ID,SkillSet_ID);
+	dbms_output.put_line('Row inserted into JOB_POST_SKILL Table');
 	dbms_output.put_line('----------------------------------------------------------');
 	commit;
 	exception
 		when dup_val_on_index then
-		dbms_output.put_line('Duplicate Value Found in JOBPOST table! Insert Different Value');
+		dbms_output.put_line('Duplicate Value Found in JOB_POST_SKILL table! Insert Different Value');
 		when others then
-		dbms_output.put_line('Error while inserting data into JOBPOST Table');
+		dbms_output.put_line('Error while inserting data into JOB_POST_SKILL Table');
 		rollback;
 			dbms_output.put_line('The error encountered is: ');
 			dbms_output.put_line(dbms_utility.format_error_stack);
 			dbms_output.put_line('----------------------------------------------------------');
-	end JOBPOST_DETAILS;
+	end JOB_POST_SKILL_DETAILS;
+    
+    PROCEDURE JOB_EDUCATION_REQ_DETAILS(JobPost_ID IN NUMBER, Degree_ID IN NUMBER)
+	AS
+	BEGIN
+	dbms_output.put_line('----------------------------------------------------------');
+	INSERT INTO JOB_EDUCATION_REQ(JobPost_ID, Degree_ID) VALUES (JobPost_ID, Degree_ID);
+	dbms_output.put_line('Row inserted into JOB_EDUCATION_REQ Table');
+	dbms_output.put_line('----------------------------------------------------------');
+	commit;
+	exception
+		when dup_val_on_index then
+		dbms_output.put_line('Duplicate Value Found in JOB_EDUCATION_REQ table! Insert Different Value');
+		when others then
+		dbms_output.put_line('Error while inserting data into JOB_EDUCATION_REQ Table');
+		rollback;
+			dbms_output.put_line('The error encountered is: ');
+			dbms_output.put_line(dbms_utility.format_error_stack);
+			dbms_output.put_line('----------------------------------------------------------');
+	end JOB_EDUCATION_REQ_DETAILS;
+    
+    PROCEDURE Update_Job_Post(job_id in NUMBER, hire_status in VARCHAR2)
+as
+    hire_stat jobpost.hiring_status%TYPE;
+BEGIN
+    select hiring_status into hire_stat from jobpost where jobpost_id = job_id;
+    IF hire_stat = hire_status THEN
+        dbms_output.put_line('Hiring status is already ' || hire_status || ', no update necessary.');
+    ELSE
+        dbms_output.put_line('----------------------------------------------------------');
+        UPDATE jobpost set hiring_status = hire_status where jobpost_id = job_id;
+        dbms_output.put_line('Hiring status of JOB ID '||job_id|| ' changed to '|| hire_status);
+        dbms_output.put_line('----------------------------------------------------------');
+        commit;
+    END IF;
+EXCEPTION
+    WHEN OTHERS THEN
+        IF SQLCODE = -2290 THEN -- ORA-02290: check constraint violation
+            dbms_output.put_line('Cannot update status to ' || hire_status || ', constraint violation detected.');
+            dbms_output.put_line('Choose from "AVAILABLE","EXPIRED"');
+        ELSE
+            dbms_output.put_line('Error while updating data into Job Post Table');
+            dbms_output.put_line('The error encountered is: ');
+            dbms_output.put_line(dbms_utility.format_error_stack);
+        END IF;
+        ROLLBACK;
+        dbms_output.put_line('----------------------------------------------------------');
+END Update_Job_Post ;
+    
+END POST_JOB_PACKAGE;
 /
 
+EXEC POST_JOB_PACKAGE.JOBPOST_DETAILS('Software Developer', TO_DATE('2022-02-15', 'YYYY-MM-DD'), 'We are seeking a skilled software developer to join our team.', 'Bob Smith', 50000, 'AVAILABLE', 101, 101, 101);
+EXEC POST_JOB_PACKAGE.JOBPOST_DETAILS('Marketing Manager', TO_DATE('2022-03-01', 'YYYY-MM-DD'), 'We are looking for an experienced marketing manager to lead our team.', 'Bob Smith',100000, 'AVAILABLE', 102, 102, 102);
+EXEC POST_JOB_PACKAGE.JOBPOST_DETAILS('Data Analyst', TO_DATE('2022-02-28', 'YYYY-MM-DD'), 'We are seeking a data analyst to help us make informed business decisions.', 'Bob Smith', 60000,'AVAILABLE', 101, 103, 103);
+EXEC POST_JOB_PACKAGE.JOBPOST_DETAILS('Finance Manager', TO_DATE('2022-03-15', 'YYYY-MM-DD'), 'We are looking for a finance manager to oversee our financial operations.', 'Bob Smith', 120000,'AVAILABLE', 103, 102, 104);
+EXEC POST_JOB_PACKAGE.JOBPOST_DETAILS('IT Support Specialist', TO_DATE('2022-02-20', 'YYYY-MM-DD'), 'We are seeking an IT support specialist to assist our employees with technical issues.', 'Bob Smith',130000, 'AVAILABLE', 104, 101, 105);
+EXEC POST_JOB_PACKAGE.JOBPOST_DETAILS('Sales Manager', TO_DATE('2022-03-20', 'YYYY-MM-DD'), 'We are seeking an experienced sales manager to lead our team and drive sales growth.', 'Bob Smith', 4000,'AVAILABLE', 105, 102, 105);
+EXEC POST_JOB_PACKAGE.JOBPOST_DETAILS('Project Manager', TO_DATE('2022-03-10', 'YYYY-MM-DD'), 'We are looking for a skilled project manager to oversee our projects and ensure they are completed on time and within budget.', 'Bob Smith',140000, 'AVAILABLE', 106, 103, 101);
+EXEC POST_JOB_PACKAGE.JOBPOST_DETAILS('HR Manager', TO_DATE('2022-03-01', 'YYYY-MM-DD'), 'We are looking for an experienced HR manager to oversee our HR department and manage employee relations.', 'Bob Smith', 700000,'AVAILABLE', 108, 103, 103);
+/
 
-EXEC JOBPOST_DETAILS('Software Developer', TO_DATE('2022-02-15', 'YYYY-MM-DD'), 'We are seeking a skilled software developer to join our team.', 'Bob Smith', 50000, 'AVAILABLE', 101, 101, 101);
-EXEC JOBPOST_DETAILS('Marketing Manager', TO_DATE('2022-03-01', 'YYYY-MM-DD'), 'We are looking for an experienced marketing manager to lead our team.', 'Bob Smith',100000, 'AVAILABLE', 102, 102, 102);
-EXEC JOBPOST_DETAILS('Data Analyst', TO_DATE('2022-02-28', 'YYYY-MM-DD'), 'We are seeking a data analyst to help us make informed business decisions.', 'Bob Smith', 60000,'AVAILABLE', 101, 103, 103);
-EXEC JOBPOST_DETAILS('Finance Manager', TO_DATE('2022-03-15', 'YYYY-MM-DD'), 'We are looking for a finance manager to oversee our financial operations.', 'Bob Smith', 120000,'AVAILABLE', 103, 102, 104);
-EXEC JOBPOST_DETAILS('IT Support Specialist', TO_DATE('2022-02-20', 'YYYY-MM-DD'), 'We are seeking an IT support specialist to assist our employees with technical issues.', 'Bob Smith',130000, 'AVAILABLE', 104, 101, 105);
-EXEC JOBPOST_DETAILS('Sales Manager', TO_DATE('2022-03-20', 'YYYY-MM-DD'), 'We are seeking an experienced sales manager to lead our team and drive sales growth.', 'Bob Smith', 4000,'AVAILABLE', 105, 102, 105);
-EXEC JOBPOST_DETAILS('Project Manager', TO_DATE('2022-03-10', 'YYYY-MM-DD'), 'We are looking for a skilled project manager to oversee our projects and ensure they are completed on time and within budget.', 'Bob Smith',140000, 'AVAILABLE', 106, 103, 101);
-EXEC JOBPOST_DETAILS('HR Manager', TO_DATE('2022-03-01', 'YYYY-MM-DD'), 'We are looking for an experienced HR manager to oversee our HR department and manage employee relations.', 'Bob Smith', 700000,'AVAILABLE', 108, 103, 103);
+EXEC POST_JOB_PACKAGE.JOB_POST_SKILL_DETAILS( 101, 101);
+EXEC POST_JOB_PACKAGE.JOB_POST_SKILL_DETAILS( 101, 104 );
+EXEC POST_JOB_PACKAGE.JOB_POST_SKILL_DETAILS(101, 105);
+EXEC POST_JOB_PACKAGE.JOB_POST_SKILL_DETAILS(102, 102);
+EXEC POST_JOB_PACKAGE.JOB_POST_SKILL_DETAILS(102, 103);
+EXEC POST_JOB_PACKAGE.JOB_POST_SKILL_DETAILS(103, 105);
+EXEC POST_JOB_PACKAGE.JOB_POST_SKILL_DETAILS(103, 104);
+EXEC POST_JOB_PACKAGE.JOB_POST_SKILL_DETAILS(103, 108);
+EXEC POST_JOB_PACKAGE.JOB_POST_SKILL_DETAILS(104, 110);
+EXEC POST_JOB_PACKAGE.JOB_POST_SKILL_DETAILS(104, 111);
+EXEC POST_JOB_PACKAGE.JOB_POST_SKILL_DETAILS(104, 103);
+EXEC POST_JOB_PACKAGE.JOB_POST_SKILL_DETAILS(105, 102);
+EXEC POST_JOB_PACKAGE.JOB_POST_SKILL_DETAILS(105, 103);
+EXEC POST_JOB_PACKAGE.JOB_POST_SKILL_DETAILS(106, 109);
+EXEC POST_JOB_PACKAGE.JOB_POST_SKILL_DETAILS(106, 103); 
+EXEC POST_JOB_PACKAGE.JOB_POST_SKILL_DETAILS(106, 102);
+EXEC POST_JOB_PACKAGE.JOB_POST_SKILL_DETAILS(107, 110);
+EXEC POST_JOB_PACKAGE.JOB_POST_SKILL_DETAILS(107, 102);
+EXEC POST_JOB_PACKAGE.JOB_POST_SKILL_DETAILS(108, 110);
+EXEC POST_JOB_PACKAGE.JOB_POST_SKILL_DETAILS(108, 102);
+EXEC POST_JOB_PACKAGE.JOB_POST_SKILL_DETAILS(108, 103);
+/
 
+  
+EXEC POST_JOB_PACKAGE.JOB_EDUCATION_REQ_DETAILS(101, 104);
+EXEC POST_JOB_PACKAGE.JOB_EDUCATION_REQ_DETAILS(101, 105);
+EXEC POST_JOB_PACKAGE.JOB_EDUCATION_REQ_DETAILS(102, 102);
+EXEC POST_JOB_PACKAGE.JOB_EDUCATION_REQ_DETAILS(102, 103);
+EXEC POST_JOB_PACKAGE.JOB_EDUCATION_REQ_DETAILS(102, 101);
+EXEC POST_JOB_PACKAGE.JOB_EDUCATION_REQ_DETAILS(103, 101);
+EXEC POST_JOB_PACKAGE.JOB_EDUCATION_REQ_DETAILS(103, 104);
+EXEC POST_JOB_PACKAGE.JOB_EDUCATION_REQ_DETAILS(103, 105);
+EXEC POST_JOB_PACKAGE.JOB_EDUCATION_REQ_DETAILS(103, 106);
+EXEC POST_JOB_PACKAGE.JOB_EDUCATION_REQ_DETAILS(104, 101);
+EXEC POST_JOB_PACKAGE.JOB_EDUCATION_REQ_DETAILS(104, 103);
+EXEC POST_JOB_PACKAGE.JOB_EDUCATION_REQ_DETAILS(104, 102);
+EXEC POST_JOB_PACKAGE.JOB_EDUCATION_REQ_DETAILS(105, 104);
+EXEC POST_JOB_PACKAGE.JOB_EDUCATION_REQ_DETAILS(105, 105);
+EXEC POST_JOB_PACKAGE.JOB_EDUCATION_REQ_DETAILS(105, 107);
+EXEC POST_JOB_PACKAGE.JOB_EDUCATION_REQ_DETAILS(106, 102);
+EXEC POST_JOB_PACKAGE.JOB_EDUCATION_REQ_DETAILS(106, 103);
+EXEC POST_JOB_PACKAGE.JOB_EDUCATION_REQ_DETAILS(107, 101);
+EXEC POST_JOB_PACKAGE.JOB_EDUCATION_REQ_DETAILS(107, 106);
+EXEC POST_JOB_PACKAGE.JOB_EDUCATION_REQ_DETAILS(108, 101);
+EXEC POST_JOB_PACKAGE.JOB_EDUCATION_REQ_DETAILS(108, 106);
 /
 
 -------- Inserting data into the table Applications ------------------
@@ -641,96 +777,6 @@ EXEC APPLICATION_TRACKING_DETAILS('APPLIED', TO_DATE('08/09/2022', 'MM/DD/YYYY')
 EXEC APPLICATION_TRACKING_DETAILS('INTERVIEW_SCHEDULED', TO_DATE('08/12/2022', 'MM/DD/YYYY'), user, 332);
 EXEC APPLICATION_TRACKING_DETAILS('HIRED', TO_DATE('02/12/2023', 'MM/DD/YYYY'), user, 332);
 
-/
--------- Inserting data into the table Job Post Skill ------------------
-
-
-create or replace PROCEDURE JOB_POST_SKILL_DETAILS(JobPostSkill_ID IN NUMBER, SkillSet_ID IN NUMBER)
-	AS
-	BEGIN
-	dbms_output.put_line('----------------------------------------------------------');
-	INSERT INTO JOB_POST_SKILL(JobPostSkill_ID, SkillSet_ID) VALUES (JobPostSkill_ID,SkillSet_ID);
-	dbms_output.put_line('Row inserted into JOB_POST_SKILL Table');
-	dbms_output.put_line('----------------------------------------------------------');
-	commit;
-	exception
-		when dup_val_on_index then
-		dbms_output.put_line('Duplicate Value Found in JOB_POST_SKILL table! Insert Different Value');
-		when others then
-		dbms_output.put_line('Error while inserting data into JOB_POST_SKILL Table');
-		rollback;
-			dbms_output.put_line('The error encountered is: ');
-			dbms_output.put_line(dbms_utility.format_error_stack);
-			dbms_output.put_line('----------------------------------------------------------');
-	end JOB_POST_SKILL_DETAILS;
-    /
-
-EXEC JOB_POST_SKILL_DETAILS( 101, 101);
-EXEC JOB_POST_SKILL_DETAILS( 101, 104 );
-EXEC JOB_POST_SKILL_DETAILS(101, 105);
-EXEC JOB_POST_SKILL_DETAILS(102, 102);
-EXEC JOB_POST_SKILL_DETAILS(102, 103);
-EXEC JOB_POST_SKILL_DETAILS(103, 105);
-EXEC JOB_POST_SKILL_DETAILS( 103, 104);
-EXEC JOB_POST_SKILL_DETAILS(103, 108);
-EXEC JOB_POST_SKILL_DETAILS( 104, 110);
-EXEC JOB_POST_SKILL_DETAILS(104, 111);
-EXEC JOB_POST_SKILL_DETAILS(104, 103);
-EXEC JOB_POST_SKILL_DETAILS(105, 102);
-EXEC JOB_POST_SKILL_DETAILS( 105, 103);
-EXEC JOB_POST_SKILL_DETAILS(106, 109);
-EXEC JOB_POST_SKILL_DETAILS( 106, 103); 
-EXEC JOB_POST_SKILL_DETAILS(106, 102);
-EXEC JOB_POST_SKILL_DETAILS( 107, 110);
-EXEC JOB_POST_SKILL_DETAILS(107, 102);
-EXEC JOB_POST_SKILL_DETAILS(108, 110);
-EXEC JOB_POST_SKILL_DETAILS(108, 102);
-EXEC JOB_POST_SKILL_DETAILS(  108, 103 );
-/
-
--------- Inserting data into the table Job Education ------------------
-
-create or replace PROCEDURE JOB_EDUCATION_REQ_DETAILS(JobPost_ID IN NUMBER, Degree_ID IN NUMBER)
-	AS
-	BEGIN
-	dbms_output.put_line('----------------------------------------------------------');
-	INSERT INTO JOB_EDUCATION_REQ(JobPost_ID, Degree_ID) VALUES (JobPost_ID, Degree_ID);
-	dbms_output.put_line('Row inserted into JOB_EDUCATION_REQ Table');
-	dbms_output.put_line('----------------------------------------------------------');
-	commit;
-	exception
-		when dup_val_on_index then
-		dbms_output.put_line('Duplicate Value Found in JOB_EDUCATION_REQ table! Insert Different Value');
-		when others then
-		dbms_output.put_line('Error while inserting data into JOB_EDUCATION_REQ Table');
-		rollback;
-			dbms_output.put_line('The error encountered is: ');
-			dbms_output.put_line(dbms_utility.format_error_stack);
-			dbms_output.put_line('----------------------------------------------------------');
-	end JOB_EDUCATION_REQ_DETAILS;
-    /
-    
-EXEC JOB_EDUCATION_REQ_DETAILS(101, 104);
-EXEC JOB_EDUCATION_REQ_DETAILS(101, 105);
-EXEC JOB_EDUCATION_REQ_DETAILS(102, 102);
-EXEC JOB_EDUCATION_REQ_DETAILS(102, 103);
-EXEC JOB_EDUCATION_REQ_DETAILS(102, 101);
-EXEC JOB_EDUCATION_REQ_DETAILS(103, 101);
-EXEC JOB_EDUCATION_REQ_DETAILS(103, 104);
-EXEC JOB_EDUCATION_REQ_DETAILS(103, 105);
-EXEC JOB_EDUCATION_REQ_DETAILS(103, 106);
-EXEC JOB_EDUCATION_REQ_DETAILS(104, 101);
-EXEC JOB_EDUCATION_REQ_DETAILS(104, 103);
-EXEC JOB_EDUCATION_REQ_DETAILS(104, 102);
-EXEC JOB_EDUCATION_REQ_DETAILS(105, 104);
-EXEC JOB_EDUCATION_REQ_DETAILS(105, 105);
-EXEC JOB_EDUCATION_REQ_DETAILS(105, 107);
-EXEC JOB_EDUCATION_REQ_DETAILS(106, 102);
-EXEC JOB_EDUCATION_REQ_DETAILS(106, 103);
-EXEC JOB_EDUCATION_REQ_DETAILS(107, 101);
-EXEC JOB_EDUCATION_REQ_DETAILS(107, 106);
-EXEC JOB_EDUCATION_REQ_DETAILS(108, 101);
-EXEC JOB_EDUCATION_REQ_DETAILS(108, 106);
 /
 
 ----- Create trigger for application tracking  ------
