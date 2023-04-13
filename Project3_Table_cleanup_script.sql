@@ -723,12 +723,14 @@ EXEC JOB_EDUCATION_REQ_DETAILS(108, 106);
 ----- Create trigger for application tracking  ------
 
 create or replace trigger app_track_count
-after update on applications
+after update or insert on applications
 for each row
-when (new.current_status <> old.current_status)
-Begin 
-insert into application_tracking( STATUS, CHANGED_ON, MODIFIED_BY, APPLICATION_ID)
-values (:new.current_status, sysdate, user, :new.application_id );
+begin 
+    if updating and :new.current_status <> :old.current_status or inserting then
+    insert into application_tracking( STATUS, CHANGED_ON, MODIFIED_BY, APPLICATION_ID)
+    values (:new.current_status, sysdate, user, :new.application_id );
+
+    end if;
 end;
 /
 
