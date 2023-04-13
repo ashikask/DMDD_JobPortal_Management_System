@@ -43,6 +43,10 @@ exception
 end;
 /
 
+
+--FUNCTION check if table alredy exist
+-- input: tbl_name - name of the table being created
+-- output: Boolean indicating table exist or not
 CREATE OR REPLACE FUNCTION table_exists(tbl_name IN VARCHAR2) RETURN BOOLEAN AS
     table_count NUMBER;
 BEGIN
@@ -51,6 +55,8 @@ BEGIN
 END;
 
 /
+
+--PROCEDURE FOR CREATING TABLES
 CREATE OR REPLACE PROCEDURE create_table(
     tbl_name VARCHAR2,
     create_query VARCHAR2
@@ -361,37 +367,7 @@ EXEC SKILLSET_DETAILS('Teamwork', 'SOFTSKILLS');
 EXEC SKILLSET_DETAILS('Project Management', 'SOFTSKILLS');
 EXEC SKILLSET_DETAILS('Data Analysis', 'TECHNICAL');
 /
- 
--------- Inserting data into the table Users ------------------
 
-create or replace PROCEDURE USER_DETAILS(First_Name in VARCHAR2,
-Last_Name IN VARCHAR2, Date_of_Birth IN DATE, Gender IN VARCHAR2,Phone_Number IN NUMBER, Role_Type IN VARCHAR2)
-	AS
-	BEGIN
-	dbms_output.put_line('----------------------------------------------------------');
-	INSERT INTO USERS(First_Name, Last_Name, Date_of_Birth, Gender, Phone_Number, Role_Type) VALUES (First_Name, Last_Name, Date_of_Birth, Gender, Phone_Number, Role_Type);
-	dbms_output.put_line('Row inserted into USERS Table');
-	dbms_output.put_line('----------------------------------------------------------');
-	commit;
-	exception
-		when dup_val_on_index then
-		dbms_output.put_line('Duplicate Value Found in USERS table! Insert Different Value');
-		when others then
-		dbms_output.put_line('Error while inserting data into USERS Table');
-		rollback;
-			dbms_output.put_line('The error encountered is: ');
-			dbms_output.put_line(dbms_utility.format_error_stack);
-			dbms_output.put_line('----------------------------------------------------------');
-	end USER_DETAILS;
-/
-
-EXEC USER_DETAILS('John', 'Doe', TO_DATE('1990-01-01', 'YYYY-MM-DD'), 'MALE', 1234567890, 'JOBSEEKER');
-EXEC USER_DETAILS('Jane', 'Doe', TO_DATE('1995-02-14', 'YYYY-MM-DD'), 'FEMALE', 2345678901, 'JOBSEEKER');
-EXEC USER_DETAILS('Bob', 'Smith', TO_DATE('1985-07-22', 'YYYY-MM-DD'), 'MALE', 3456789012, 'RECRUITER');
-EXEC USER_DETAILS('David', 'Lee', TO_DATE('2003-04-15', 'YYYY-MM-DD'), 'MALE', 5678901234, 'JOBSEEKER');
-EXEC USER_DETAILS('Sarah', 'Kim', TO_DATE('1991-09-28', 'YYYY-MM-DD'), 'FEMALE', 6789012345, 'JOBSEEKER');
-EXEC USER_DETAILS('Emily', 'Wang', TO_DATE('1994-11-11', 'YYYY-MM-DD'), 'FEMALE', 8901234567, 'JOBSEEKER');
-/
 
 -------- Inserting data into the table Education ------------------
 
@@ -424,7 +400,126 @@ EXEC EDUCATION_DETAILS('Computer Science','Bachelors');
 EXEC EDUCATION_DETAILS('Information System', 'Masters');
 EXEC EDUCATION_DETAILS('Industrial Engineering','Masters');
 /
+ 
+-------- Inserting data into the table Users ------------------
 
+CREATE OR REPLACE PACKAGE ONBOADRDING_USER_PACKAGE AS
+    PROCEDURE USER_DETAILS(First_Name in VARCHAR2,
+Last_Name IN VARCHAR2, Date_of_Birth IN DATE, Gender IN VARCHAR2,Phone_Number IN NUMBER, Role_Type IN VARCHAR2);
+    PROCEDURE USER_SKILL_DETAILS(User_ID IN NUMBER, Skillset_ID IN NUMBER);
+    PROCEDURE USER_EDUCATION_DETAILS(Users_ID IN NUMBER, DEGREE_ID IN NUMBER, START_DATE IN DATE, END_DATE IN DATE);
+END ONBOADRDING_USER_PACKAGE;
+/
+
+
+CREATE OR REPLACE PACKAGE BODY ONBOADRDING_USER_PACKAGE AS
+ PROCEDURE USER_DETAILS(First_Name in VARCHAR2,
+    Last_Name IN VARCHAR2, Date_of_Birth IN DATE, Gender IN VARCHAR2,Phone_Number IN NUMBER, Role_Type IN VARCHAR2)
+	AS
+	BEGIN
+	dbms_output.put_line('----------------------------------------------------------');
+	INSERT INTO USERS(First_Name, Last_Name, Date_of_Birth, Gender, Phone_Number, Role_Type) VALUES (First_Name, Last_Name, Date_of_Birth, Gender, Phone_Number, Role_Type);
+	dbms_output.put_line('Row inserted into USERS Table');
+	dbms_output.put_line('----------------------------------------------------------');
+	commit;
+	exception
+		when dup_val_on_index then
+		dbms_output.put_line('Duplicate Value Found in USERS table! Insert Different Value');
+		when others then
+		dbms_output.put_line('Error while inserting data into USERS Table');
+		rollback;
+			dbms_output.put_line('The error encountered is: ');
+			dbms_output.put_line(dbms_utility.format_error_stack);
+			dbms_output.put_line('----------------------------------------------------------');
+	end USER_DETAILS;
+
+    PROCEDURE USER_SKILL_DETAILS(User_ID IN NUMBER, Skillset_ID IN NUMBER)
+	AS
+	BEGIN
+	dbms_output.put_line('----------------------------------------------------------');
+	INSERT INTO USER_SKILL(User_ID, Skillset_ID) VALUES (User_ID, Skillset_ID);
+	dbms_output.put_line('Row inserted into USER_SKILL Table');
+	dbms_output.put_line('----------------------------------------------------------');
+	commit;
+	exception
+		when dup_val_on_index then
+		dbms_output.put_line('Duplicate Value Found in USER_SKILL table! Insert Different Value');
+		when others then
+		dbms_output.put_line('Error while inserting data into USER_SKILL Table');
+		rollback;
+			dbms_output.put_line('The error encountered is: ');
+			dbms_output.put_line(dbms_utility.format_error_stack);
+			dbms_output.put_line('----------------------------------------------------------');
+	end USER_SKILL_DETAILS;
+    
+    PROCEDURE USER_EDUCATION_DETAILS(Users_ID IN NUMBER, DEGREE_ID IN NUMBER, START_DATE IN DATE, END_DATE IN DATE)
+	AS
+	BEGIN
+	dbms_output.put_line('----------------------------------------------------------');
+	INSERT INTO USER_EDUCATION(Users_ID, DEGREE_ID, START_DATE, END_DATE) VALUES (Users_ID, DEGREE_ID, START_DATE, END_DATE);
+	dbms_output.put_line('Row inserted into USER_EDUCATION Table');
+	dbms_output.put_line('----------------------------------------------------------');
+	commit;
+	exception
+		when dup_val_on_index then
+		dbms_output.put_line('Duplicate Value Found in USER_EDUCATION table! Insert Different Value');
+		when others then
+		dbms_output.put_line('Error while inserting data into USER_EDUCATION Table');
+		rollback;
+			dbms_output.put_line('The error encountered is: ');
+			dbms_output.put_line(dbms_utility.format_error_stack);
+			dbms_output.put_line('----------------------------------------------------------');
+	end USER_EDUCATION_DETAILS;
+END ONBOADRDING_USER_PACKAGE;
+/
+
+
+
+EXEC ONBOADRDING_USER_PACKAGE.USER_DETAILS('John', 'Doe', TO_DATE('1990-01-01', 'YYYY-MM-DD'), 'MALE', 1234567890, 'JOBSEEKER');
+EXEC ONBOADRDING_USER_PACKAGE.USER_DETAILS('Jane', 'Doe', TO_DATE('1995-02-14', 'YYYY-MM-DD'), 'FEMALE', 2345678901, 'JOBSEEKER');
+EXEC ONBOADRDING_USER_PACKAGE.USER_DETAILS('Bob', 'Smith', TO_DATE('1985-07-22', 'YYYY-MM-DD'), 'MALE', 3456789012, 'RECRUITER');
+EXEC ONBOADRDING_USER_PACKAGE.USER_DETAILS('David', 'Lee', TO_DATE('2003-04-15', 'YYYY-MM-DD'), 'MALE', 5678901234, 'JOBSEEKER');
+EXEC ONBOADRDING_USER_PACKAGE.USER_DETAILS('Sarah', 'Kim', TO_DATE('1991-09-28', 'YYYY-MM-DD'), 'FEMALE', 6789012345, 'JOBSEEKER');
+EXEC ONBOADRDING_USER_PACKAGE.USER_DETAILS('Emily', 'Wang', TO_DATE('1994-11-11', 'YYYY-MM-DD'), 'FEMALE', 8901234567, 'JOBSEEKER');
+
+/
+
+EXEC ONBOADRDING_USER_PACKAGE.USER_SKILL_DETAILS(101, 101);
+EXEC ONBOADRDING_USER_PACKAGE.USER_SKILL_DETAILS(101, 104);
+EXEC ONBOADRDING_USER_PACKAGE.USER_SKILL_DETAILS(101, 105);
+EXEC ONBOADRDING_USER_PACKAGE.USER_SKILL_DETAILS(102, 101);
+EXEC ONBOADRDING_USER_PACKAGE.USER_SKILL_DETAILS(102, 104);
+EXEC ONBOADRDING_USER_PACKAGE.USER_SKILL_DETAILS(102, 105);
+EXEC ONBOADRDING_USER_PACKAGE.USER_SKILL_DETAILS(102, 102);
+EXEC ONBOADRDING_USER_PACKAGE.USER_SKILL_DETAILS(102, 103);
+EXEC ONBOADRDING_USER_PACKAGE.USER_SKILL_DETAILS(102, 107);
+EXEC ONBOADRDING_USER_PACKAGE.USER_SKILL_DETAILS(104, 109);
+EXEC ONBOADRDING_USER_PACKAGE.USER_SKILL_DETAILS(104, 103);
+EXEC ONBOADRDING_USER_PACKAGE.USER_SKILL_DETAILS(104, 102);
+EXEC ONBOADRDING_USER_PACKAGE.USER_SKILL_DETAILS(105, 105);
+EXEC ONBOADRDING_USER_PACKAGE.USER_SKILL_DETAILS(105, 102);
+EXEC ONBOADRDING_USER_PACKAGE.USER_SKILL_DETAILS(105, 103);
+EXEC ONBOADRDING_USER_PACKAGE.USER_SKILL_DETAILS(105, 110);
+EXEC ONBOADRDING_USER_PACKAGE.USER_SKILL_DETAILS(105, 111);
+EXEC ONBOADRDING_USER_PACKAGE.USER_SKILL_DETAILS(106, 109);
+EXEC ONBOADRDING_USER_PACKAGE.USER_SKILL_DETAILS(106, 103);
+EXEC ONBOADRDING_USER_PACKAGE.USER_SKILL_DETAILS(106, 103);
+EXEC ONBOADRDING_USER_PACKAGE.USER_SKILL_DETAILS(106, 101);
+EXEC ONBOADRDING_USER_PACKAGE.USER_SKILL_DETAILS(106, 104);
+/
+
+    
+
+EXEC ONBOADRDING_USER_PACKAGE.USER_EDUCATION_DETAILS(101, 104,TO_DATE('09/4/2020', 'MM/DD/YYYY'), TO_DATE('5/4/2024', 'MM/DD/YYYY'));
+EXEC ONBOADRDING_USER_PACKAGE.USER_EDUCATION_DETAILS(101, 107,TO_DATE('08/20/2024', 'MM/DD/YYYY'), TO_DATE('6/4/2026', 'MM/DD/YYYY'));
+EXEC ONBOADRDING_USER_PACKAGE.USER_EDUCATION_DETAILS(102, 104,TO_DATE('09/20/2020', 'MM/DD/YYYY'), TO_DATE('4/30/2024', 'MM/DD/YYYY'));
+EXEC ONBOADRDING_USER_PACKAGE.USER_EDUCATION_DETAILS(102, 103,TO_DATE('08/13/2024', 'MM/DD/YYYY'), TO_DATE('5/22/2026', 'MM/DD/YYYY'));
+EXEC ONBOADRDING_USER_PACKAGE.USER_EDUCATION_DETAILS(104, 102,TO_DATE('09/17/2020', 'MM/DD/YYYY'), TO_DATE('4/20/2024', 'MM/DD/YYYY'));
+EXEC ONBOADRDING_USER_PACKAGE.USER_EDUCATION_DETAILS(105, 104,TO_DATE('09/23/2020', 'MM/DD/YYYY'), TO_DATE('5/17/2024', 'MM/DD/YYYY'));
+EXEC ONBOADRDING_USER_PACKAGE.USER_EDUCATION_DETAILS(105, 107, TO_DATE('08/29/2024', 'MM/DD/YYYY'), TO_DATE('5/15/2026', 'MM/DD/YYYY'));
+EXEC ONBOADRDING_USER_PACKAGE.USER_EDUCATION_DETAILS(106, 104,TO_DATE('09/6/2020', 'MM/DD/YYYY'), TO_DATE('4/29/2024', 'MM/DD/YYYY'));
+EXEC ONBOADRDING_USER_PACKAGE.USER_EDUCATION_DETAILS(106, 101,TO_DATE('08/4/2024', 'MM/DD/YYYY'), TO_DATE('5/17/2026', 'MM/DD/YYYY'));
+/
 
 
 -------- Inserting data into the table Job Post ------------------
@@ -593,88 +688,6 @@ EXEC JOB_POST_SKILL_DETAILS(108, 102);
 EXEC JOB_POST_SKILL_DETAILS(  108, 103 );
 /
 
-
--------- Inserting data into the table User Skill ------------------
-
-
-create or replace PROCEDURE USER_SKILL_DETAILS(User_ID IN NUMBER, Skillset_ID IN NUMBER)
-	AS
-	BEGIN
-	dbms_output.put_line('----------------------------------------------------------');
-	INSERT INTO USER_SKILL(User_ID, Skillset_ID) VALUES (User_ID, Skillset_ID);
-	dbms_output.put_line('Row inserted into USER_SKILL Table');
-	dbms_output.put_line('----------------------------------------------------------');
-	commit;
-	exception
-		when dup_val_on_index then
-		dbms_output.put_line('Duplicate Value Found in USER_SKILL table! Insert Different Value');
-		when others then
-		dbms_output.put_line('Error while inserting data into USER_SKILL Table');
-		rollback;
-			dbms_output.put_line('The error encountered is: ');
-			dbms_output.put_line(dbms_utility.format_error_stack);
-			dbms_output.put_line('----------------------------------------------------------');
-	end USER_SKILL_DETAILS;
-    /
-
-
-EXEC USER_SKILL_DETAILS(101, 101);
-EXEC USER_SKILL_DETAILS(101, 104);
-EXEC USER_SKILL_DETAILS(101, 105);
-EXEC USER_SKILL_DETAILS(102, 101);
-EXEC USER_SKILL_DETAILS(102, 104);
-EXEC USER_SKILL_DETAILS(102, 105);
-EXEC USER_SKILL_DETAILS(102, 102);
-EXEC USER_SKILL_DETAILS(102, 103);
-EXEC USER_SKILL_DETAILS(102, 107);
-EXEC USER_SKILL_DETAILS(104, 109);
-EXEC USER_SKILL_DETAILS(104, 103);
-EXEC USER_SKILL_DETAILS(104, 102);
-EXEC USER_SKILL_DETAILS(105, 105);
-EXEC USER_SKILL_DETAILS(105, 102);
-EXEC USER_SKILL_DETAILS(105, 103);
-EXEC USER_SKILL_DETAILS(105, 110);
-EXEC USER_SKILL_DETAILS(105, 111);
-EXEC USER_SKILL_DETAILS(106, 109);
-EXEC USER_SKILL_DETAILS(106, 103);
-EXEC USER_SKILL_DETAILS(106, 103);
-EXEC USER_SKILL_DETAILS(106, 101);
-EXEC USER_SKILL_DETAILS(106, 104);
-/
-
--------- Inserting data into the table User Education ------------------
-
-create or replace PROCEDURE USER_EDUCATION_DETAILS(Users_ID IN NUMBER, DEGREE_ID IN NUMBER, START_DATE IN DATE, END_DATE IN DATE)
-	AS
-	BEGIN
-	dbms_output.put_line('----------------------------------------------------------');
-	INSERT INTO USER_EDUCATION(Users_ID, DEGREE_ID, START_DATE, END_DATE) VALUES (Users_ID, DEGREE_ID, START_DATE, END_DATE);
-	dbms_output.put_line('Row inserted into USER_EDUCATION Table');
-	dbms_output.put_line('----------------------------------------------------------');
-	commit;
-	exception
-		when dup_val_on_index then
-		dbms_output.put_line('Duplicate Value Found in USER_EDUCATION table! Insert Different Value');
-		when others then
-		dbms_output.put_line('Error while inserting data into USER_EDUCATION Table');
-		rollback;
-			dbms_output.put_line('The error encountered is: ');
-			dbms_output.put_line(dbms_utility.format_error_stack);
-			dbms_output.put_line('----------------------------------------------------------');
-	end USER_EDUCATION_DETAILS;
-    /
-    
-
-EXEC USER_EDUCATION_DETAILS(101, 104,TO_DATE('09/4/2020', 'MM/DD/YYYY'), TO_DATE('5/4/2024', 'MM/DD/YYYY'));
-EXEC USER_EDUCATION_DETAILS(101, 107,TO_DATE('08/20/2024', 'MM/DD/YYYY'), TO_DATE('6/4/2026', 'MM/DD/YYYY'));
-EXEC USER_EDUCATION_DETAILS(102, 104,TO_DATE('09/20/2020', 'MM/DD/YYYY'), TO_DATE('4/30/2024', 'MM/DD/YYYY'));
-EXEC USER_EDUCATION_DETAILS(102, 103,TO_DATE('08/13/2024', 'MM/DD/YYYY'), TO_DATE('5/22/2026', 'MM/DD/YYYY'));
-EXEC USER_EDUCATION_DETAILS(104, 102,TO_DATE('09/17/2020', 'MM/DD/YYYY'), TO_DATE('4/20/2024', 'MM/DD/YYYY'));
-EXEC USER_EDUCATION_DETAILS(105, 104,TO_DATE('09/23/2020', 'MM/DD/YYYY'), TO_DATE('5/17/2024', 'MM/DD/YYYY'));
-EXEC USER_EDUCATION_DETAILS(105, 107, TO_DATE('08/29/2024', 'MM/DD/YYYY'), TO_DATE('5/15/2026', 'MM/DD/YYYY'));
-EXEC USER_EDUCATION_DETAILS(106, 104,TO_DATE('09/6/2020', 'MM/DD/YYYY'), TO_DATE('4/29/2024', 'MM/DD/YYYY'));
-EXEC USER_EDUCATION_DETAILS(106, 101,TO_DATE('08/4/2024', 'MM/DD/YYYY'), TO_DATE('5/17/2026', 'MM/DD/YYYY'));
-/
 -------- Inserting data into the table Job Education ------------------
 
 create or replace PROCEDURE JOB_EDUCATION_REQ_DETAILS(JobPost_ID IN NUMBER, Degree_ID IN NUMBER)
