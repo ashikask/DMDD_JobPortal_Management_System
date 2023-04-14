@@ -1025,7 +1025,65 @@ EXEC POST_JOB_PACKAGE.Update_Job_Post(101, 'EXPIRED');
 EXEC POST_JOB_PACKAGE.Update_Job_Post(111, 'EXPIRED');
 /
 
+----- CREATING JOB_SEEKER_PACKAGE PACKAGE ----
+----- This package has functions and procedure for job seeker to look for jobs and his/her applications ---
+CREATE OR REPLACE PACKAGE JOB_SEEKER_PACKAGE AS
+    FUNCTION check_job_application(p_user_phoneNumber IN NUMBER) RETURN SYS_REFCURSOR;
+    procedure check_job_application_status(p_user_phoneNumber IN NUMBER);
+END JOB_SEEKER_PACKAGE;
+/
 
+CREATE OR REPLACE PACKAGE BODY JOB_SEEKER_PACKAGE AS
+    --FUNCTION check job application status
+    -- input: p_user_phoneNumber - phone number of jobseeker
+    -- output: cursor with job_title, current_status, application_date
+    FUNCTION check_job_application(p_user_phoneNumber IN NUMBER) RETURN SYS_REFCURSOR AS
+    v_cursor SYS_REFCURSOR;
+    v_user_id users.user_id%TYPE;
+BEGIN
+
+    SELECT user_id INTO v_user_id FROM users WHERE phone_number = p_user_phoneNumber;
+    
+    OPEN v_cursor FOR
+        SELECT JOBPOST.job_title, applications.current_status, applications.application_date
+        FROM JOBPOST
+        JOIN applications ON JOBPOST.JOBPOST_ID = applications.JOB_POST_ID
+        WHERE applications.user_id = v_user_id;
+    RETURN v_cursor;
+
+    EXCEPTION
+            WHEN NO_DATA_FOUND THEN
+                DBMS_OUTPUT.PUT_LINE('User does not exist');
+                RETURN NULL;
+END;
+
+--- procedure to check the application status of all jobs applied by user -----
+procedure check_job_application_status(p_user_phoneNumber IN NUMBER)
+IS
+    v_cursor SYS_REFCURSOR;
+    v_job_title jobpost.job_title%TYPE;
+    v_status applications.current_status%TYPE;
+    v_date applications.application_date%TYPE;
+BEGIN
+    v_cursor := check_job_application(p_user_phoneNumber); 
+
+    IF v_cursor%ISOPEN THEN
+        LOOP
+            FETCH v_cursor INTO v_job_title, v_status, v_date;
+            EXIT WHEN v_cursor%NOTFOUND;
+            DBMS_OUTPUT.PUT_LINE('Job Title: ' || v_job_title || ', Status: ' || v_status || ', Date: ' || v_date);
+        END LOOP;
+        CLOSE v_cursor;
+    ELSE
+        DBMS_OUTPUT.PUT_LINE('No job application found for the given user.');
+    END IF;
+END check_job_application_status;
+    
+END JOB_SEEKER_PACKAGE;
+/
+
+EXEC JOB_SEEKER_PACKAGE.check_job_application_status(p_user_phoneNumber => 678902345);
+/
 
 -------------- Creating Views -----------------
 
