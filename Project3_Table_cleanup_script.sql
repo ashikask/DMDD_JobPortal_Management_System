@@ -1017,6 +1017,14 @@ begin
 end;
 /
 
+------ Changing Job_Post to Expired------------  
+
+EXEC POST_JOB_PACKAGE.Update_Job_Post(102, 'EXPIRED');
+EXEC POST_JOB_PACKAGE.Update_Job_Post(104, 'EXPIRED');
+EXEC POST_JOB_PACKAGE.Update_Job_Post(101, 'EXPIRED');
+EXEC POST_JOB_PACKAGE.Update_Job_Post(111, 'EXPIRED');
+/
+
 
 
 -------------- Creating Views -----------------
