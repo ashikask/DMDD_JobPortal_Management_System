@@ -1029,7 +1029,11 @@ EXEC POST_JOB_PACKAGE.Update_Job_Post(111, 'EXPIRED');
 ----- This package has functions and procedure for job seeker to look for jobs and his/her applications ---
 CREATE OR REPLACE PACKAGE JOB_SEEKER_PACKAGE AS
     FUNCTION check_job_application(p_user_phoneNumber IN NUMBER) RETURN SYS_REFCURSOR;
+    FUNCTION job_based_on_degree(p_user_phoneNumber IN NUMBER) RETURN SYS_REFCURSOR;
+    FUNCTION job_based_on_skill(p_user_phoneNumber IN NUMBER) RETURN SYS_REFCURSOR;
     procedure check_job_application_status(p_user_phoneNumber IN NUMBER);
+    procedure search_job_degree(p_user_phoneNumber IN NUMBER);
+    procedure search_job_skill(p_user_phoneNumber IN NUMBER);
 END JOB_SEEKER_PACKAGE;
 /
 
@@ -1078,11 +1082,103 @@ BEGIN
         DBMS_OUTPUT.PUT_LINE('No job application found for the given user.');
     END IF;
 END check_job_application_status;
+
+ --FUNCTION to get the jobs based on the user degree
+    -- input: p_user_phoneNumber - phone number of jobseeker
+    -- output: cursor with job_title, degree_name
+    FUNCTION job_based_on_degree(p_user_phoneNumber IN NUMBER) RETURN SYS_REFCURSOR AS
+        v_cursor SYS_REFCURSOR;
+        v_user_id users.user_id%TYPE;
+    BEGIN
+        
+        SELECT user_id INTO v_user_id FROM users WHERE phone_number = p_user_phoneNumber;
+    OPEN v_cursor FOR
+        select j.job_title,ed.degree_name from jobpost j
+        join job_education_req e on j.jobpost_id=e.jobpost_id
+        join education ed on e.degree_id= ed.degree_id
+        where e.degree_id in(
+            select degree_id 
+            from user_education 
+            where users_id = v_user_id
+        );
+    RETURN v_cursor;
+    
+   EXCEPTION
+            WHEN NO_DATA_FOUND THEN
+                DBMS_OUTPUT.PUT_LINE('User does not exist');
+                RETURN NULL;
+    END;
+    
+    --- procedure to search job matching user degree  -----
+    procedure search_job_degree(p_user_phoneNumber IN NUMBER)
+    IS
+        v_cursor SYS_REFCURSOR;
+        v_job_title jobpost.job_title%TYPE;
+        v_degree_name education.degree_name%TYPE;
+        
+    BEGIN
+        v_cursor := job_based_on_degree(p_user_phoneNumber); 
+        IF v_cursor%ISOPEN THEN 
+            LOOP
+                FETCH v_cursor INTO v_job_title, v_degree_name;
+                EXIT WHEN v_cursor%NOTFOUND;
+                DBMS_OUTPUT.PUT_LINE('Job Title: ' || v_job_title || ', Degree Name: ' || v_degree_name);
+            END LOOP;
+        CLOSE v_cursor;
+        ELSE
+             DBMS_OUTPUT.PUT_LINE('No record found');
+    END IF;
+        
+    END search_job_degree;
+    
+    --FUNCTION to get the jobs based on the user skills
+    -- input: p_user_phoneNumber - phone number of jobseeker
+    -- output: cursor with job_title, skill_name
+    FUNCTION job_based_on_skill(p_user_phoneNumber IN NUMBER) RETURN SYS_REFCURSOR AS
+        v_cursor SYS_REFCURSOR;
+        v_user_id users.user_id%TYPE;
+    BEGIN
+        SELECT user_id INTO v_user_id FROM users WHERE phone_number = p_user_phoneNumber;
+    OPEN v_cursor FOR
+        select j.job_title,sk.skill_name from jobpost j
+        join job_post_skill s  on j.jobpost_id=s.jobpostskill_id
+        join skillset sk on sk.skillset_id = s.skillset_id
+        where s.skillset_id in(select skillset_id from user_skill 
+        where user_id = v_user_id);
+    RETURN v_cursor;
+    EXCEPTION
+            WHEN NO_DATA_FOUND THEN
+                DBMS_OUTPUT.PUT_LINE('User does not exist');
+                RETURN NULL;
+    END;
+    
+    --- procedure to search job matching user skills -----
+    procedure search_job_skill(p_user_phoneNumber IN NUMBER)
+    IS
+        v_cursor SYS_REFCURSOR;
+        v_job_title jobpost.job_title%TYPE;
+        v_skill_name skillset.skill_name%TYPE;
+    
+    BEGIN
+    v_cursor := job_based_on_skill(p_user_phoneNumber); 
+    IF v_cursor%ISOPEN THEN 
+        LOOP
+            FETCH v_cursor INTO v_job_title, v_skill_name;
+            EXIT WHEN v_cursor%NOTFOUND;
+            DBMS_OUTPUT.PUT_LINE('Job Title: ' || v_job_title || ', Skill Name: ' || v_skill_name);
+        END LOOP;
+        CLOSE v_cursor;
+    ELSE
+             DBMS_OUTPUT.PUT_LINE('No record found');
+    END IF;
+    END search_job_skill;
     
 END JOB_SEEKER_PACKAGE;
 /
 
-EXEC JOB_SEEKER_PACKAGE.check_job_application_status(p_user_phoneNumber => 678902345);
+EXEC JOB_SEEKER_PACKAGE.check_job_application_status(p_user_phoneNumber => 1234567890);
+EXEC JOB_SEEKER_PACKAGE.search_job_degree(p_user_phoneNumber => 1234567890);
+EXEC JOB_SEEKER_PACKAGE.search_job_skill(p_user_phoneNumber => 1234567890);
 /
 
 -------------- Creating Views -----------------
