@@ -970,18 +970,18 @@ JOIN        APPLICATIONS A ON U.USER_ID = A.USER_ID
 GROUP BY    U.USER_ID, U.FIRST_NAME, U.LAST_NAME
 ORDER BY    COUNT(A.APPLICATION_ID) DESC;
 
+
 ------- 3. The acceptance rate of people who got hired ----------
 CREATE OR REPLACE VIEW JOBSEEKER_ANALYSIS AS
-SELECT      U.USER_ID, U.FIRST_NAME, COUNT(CASE WHEN A.CURRENT_STATUS = 'HIRED' THEN 1 END) AS ACCEPTED_COUNT, COUNT(*) AS TOTAL_COUNT,
+SELECT      U.USER_ID, U.FIRST_NAME, COUNT(CASE WHEN A.CURRENT_STATUS = 'HIRED' THEN 1 END) AS ACCEPTED_COUNT, COUNT(*) AS NUMBER_OF_JOBS_APPLIED,
             ROUND((COUNT(CASE WHEN A.CURRENT_STATUS = 'HIRED' THEN 1 END) / COUNT(*)) * 100, 2) AS ACCEPTANCE_RATE
 FROM        USERS U
 JOIN        APPLICATIONS A ON U.USER_ID = A.USER_ID
 GROUP BY    U.USER_ID, U.FIRST_NAME;
 
-
 -------- 4. Top skills that most job posts require --------------
 CREATE OR REPLACE VIEW TOP_SKILLS AS
-SELECT      S.SKILL_NAME, COUNT(J.JOBPOSTSKILL_ID) AS MOST_WANTED_SKILL
+SELECT      S.SKILL_NAME, COUNT(J.JOBPOSTSKILL_ID) AS MOST_WANTED_SKILL_BY_JOBS
 FROM        SKILLSET S
 JOIN        JOB_POST_SKILL J ON S.SKILLSET_ID = J.SKILLSET_ID
 GROUP BY    S.SKILL_NAME
@@ -1067,7 +1067,6 @@ GROUP BY                J.JOB_TITLE
 ORDER BY                NUM_APPLICATIONS DESC
 FETCH FIRST 3 ROWS ONLY;
 
-
 --------- 10. Tracks the number of candidates each recruiter has sourced and those hired. 
 ----------The report includes information on the total number of candidates sourced, the number of candidates 
 --------- that were hired, and the percentage of candidates that were hired   ----
@@ -1078,3 +1077,11 @@ SELECT      MODIFIED_BY AS RECRUITER, COUNT(APPLICATION_ID) AS TOTAL_CANDIDATES_
 FROM        APPLICATION_TRACKING
 WHERE MODIFIED_BY NOT IN (SELECT FIRST_NAME||' '||LAST_NAME FROM USERS WHERE ROLE_TYPE = 'JOBSEEKER')
 GROUP BY    MODIFIED_BY;
+
+
+--------- 11. Number of job postings based on location -------
+CREATE OR REPLACE VIEW LOCATION_WISE_JOB_POSTINGS AS
+SELECT              jloc.Country, jloc.States, COUNT(jp.JobPost_ID) AS Job_Postings
+FROM                JOB_LOCATION jloc
+LEFT JOIN JOBPOST jp ON jloc.Job_Location_Id = jp.Job_Location_Id
+GROUP BY            jloc.Country, jloc.States;
