@@ -729,6 +729,7 @@ END Update_Job_Post ;
 END POST_JOB_PACKAGE;
 /
 
+
 -------- Inserting Data into JOBPOST -------------------------
 
 EXEC POST_JOB_PACKAGE.JOBPOST_DETAILS('Software Developer', TO_DATE('2022-02-15', 'YYYY-MM-DD'), 'We are seeking a skilled software developer to join our team.', 'user', 50000, 'AVAILABLE', 101, 101, 101);
