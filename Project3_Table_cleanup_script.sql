@@ -676,14 +676,14 @@ END POST_JOB_PACKAGE;
 /
 
 EXEC POST_JOB_PACKAGE.JOB_POST_SKILL_DETAILS( 101, 101);
-EXEC POST_JOB_PACKAGE.JOB_POST_SKILL_DETAILS( 101, 104 );EXEC POST_JOB_PACKAGE.JOBPOST_DETAILS('Software Developer', TO_DATE('2022-02-15', 'YYYY-MM-DD'), 'We are seeking a skilled software developer to join our team.', 'user', 50000, 'AVAILABLE', 101, 101, 101);
-EXEC POST_JOB_PACKAGE.JOBPOST_DETAILS('Marketing Manager', TO_DATE('2022-03-01', 'YYYY-MM-DD'), 'We are looking for an experienced marketing manager to lead our team.', 'user',100000, 'AVAILABLE', 102, 102, 102);
-EXEC POST_JOB_PACKAGE.JOBPOST_DETAILS('Data Analyst', TO_DATE('2022-02-28', 'YYYY-MM-DD'), 'We are seeking a data analyst to help us make informed business decisions.', 'user', 60000,'AVAILABLE', 101, 103, 103);
-EXEC POST_JOB_PACKAGE.JOBPOST_DETAILS('Finance Manager', TO_DATE('2022-03-15', 'YYYY-MM-DD'), 'We are looking for a finance manager to oversee our financial operations.', 'user', 120000,'AVAILABLE', 103, 102, 104);
-EXEC POST_JOB_PACKAGE.JOBPOST_DETAILS('IT Support Specialist', TO_DATE('2022-02-20', 'YYYY-MM-DD'), 'We are seeking an IT support specialist to assist our employees with technical issues.', 'user',130000, 'AVAILABLE', 104, 101, 105);
-EXEC POST_JOB_PACKAGE.JOBPOST_DETAILS('Sales Manager', TO_DATE('2022-03-20', 'YYYY-MM-DD'), 'We are seeking an experienced sales manager to lead our team and drive sales growth.', 'user', 4000,'AVAILABLE', 105, 102, 105);
-EXEC POST_JOB_PACKAGE.JOBPOST_DETAILS('Project Manager', TO_DATE('2022-03-10', 'YYYY-MM-DD'), 'We are looking for a skilled project manager to oversee our projects and ensure they are completed on time and within budget.', 'user',140000, 'AVAILABLE', 106, 103, 101);
-EXEC POST_JOB_PACKAGE.JOBPOST_DETAILS('HR Manager', TO_DATE('2022-03-01', 'YYYY-MM-DD'), 'We are looking for an experienced HR manager to oversee our HR department and manage employee relations.', 'user', 700000,'AVAILABLE', 108, 103, 103);
+EXEC POST_JOB_PACKAGE.JOB_POST_SKILL_DETAILS( 101, 104 );EXEC POST_JOB_PACKAGE.JOBPOST_DETAILS('Software Developer', TO_DATE('2022-02-15', 'YYYY-MM-DD'), 'We are seeking a skilled software developer to join our team.', user, 50000, 'AVAILABLE', 101, 101, 101);
+EXEC POST_JOB_PACKAGE.JOBPOST_DETAILS('Marketing Manager', TO_DATE('2022-03-01', 'YYYY-MM-DD'), 'We are looking for an experienced marketing manager to lead our team.', user,100000, 'AVAILABLE', 102, 102, 102);
+EXEC POST_JOB_PACKAGE.JOBPOST_DETAILS('Data Analyst', TO_DATE('2022-02-28', 'YYYY-MM-DD'), 'We are seeking a data analyst to help us make informed business decisions.', user, 60000,'AVAILABLE', 101, 103, 103);
+EXEC POST_JOB_PACKAGE.JOBPOST_DETAILS('Finance Manager', TO_DATE('2022-03-15', 'YYYY-MM-DD'), 'We are looking for a finance manager to oversee our financial operations.', user, 120000,'AVAILABLE', 103, 102, 104);
+EXEC POST_JOB_PACKAGE.JOBPOST_DETAILS('IT Support Specialist', TO_DATE('2022-02-20', 'YYYY-MM-DD'), 'We are seeking an IT support specialist to assist our employees with technical issues.', user,130000, 'AVAILABLE', 104, 101, 105);
+EXEC POST_JOB_PACKAGE.JOBPOST_DETAILS('Sales Manager', TO_DATE('2022-03-20', 'YYYY-MM-DD'), 'We are seeking an experienced sales manager to lead our team and drive sales growth.', user, 4000,'AVAILABLE', 105, 102, 105);
+EXEC POST_JOB_PACKAGE.JOBPOST_DETAILS('Project Manager', TO_DATE('2022-03-10', 'YYYY-MM-DD'), 'We are looking for a skilled project manager to oversee our projects and ensure they are completed on time and within budget.', user,140000, 'AVAILABLE', 106, 103, 101);
+EXEC POST_JOB_PACKAGE.JOBPOST_DETAILS('HR Manager', TO_DATE('2022-03-01', 'YYYY-MM-DD'), 'We are looking for an experienced HR manager to oversee our HR department and manage employee relations.', user, 700000,'AVAILABLE', 108, 103, 103);
 EXEC POST_JOB_PACKAGE.JOBPOST_DETAILS('Graphic Designer', TO_DATE('2023-04-12', 'YYYY-MM-DD'), 'We are seeking a creative and skilled graphic designer to join our team and help us develop visual content.', user,30000, 'AVAILABLE',116,102,112);
 EXEC POST_JOB_PACKAGE.JOBPOST_DETAILS('Customer Service Representative', TO_DATE('2022-06-10', 'YYYY-MM-DD'), 'We are looking for a friendly and helpful customer service representative to assist our customers with their inquiries and issues', user,30000, 'AVAILABLE',119,101,116);
 EXEC POST_JOB_PACKAGE.JOBPOST_DETAILS('Web Developer', TO_DATE('2022-07-09', 'YYYY-MM-DD'), 'We are seeking a talented web developer to create and maintain our company website', user,80000, 'AVAILABLE',120,102,109);
