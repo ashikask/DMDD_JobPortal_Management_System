@@ -81,6 +81,7 @@ EXCEPTION
 END;
 /
 
+
 BEGIN
   --CREATE TABLES for Job location
 
@@ -313,14 +314,21 @@ create or replace PROCEDURE JOB_CATEGORY_DETAILS(Job_Type in VARCHAR2)
 	dbms_output.put_line('----------------------------------------------------------');
 	commit;
 	exception
+        
 		when dup_val_on_index then
 		dbms_output.put_line('Duplicate Value Found in Job_Category table! Insert Different Value');
 		when others then
-		dbms_output.put_line('Error while inserting data into Job_Category Table');
-		rollback;
-			dbms_output.put_line('The error encountered is: ');
+        dbms_output.put_line('Error while inserting data into Job_Category Table');
+        IF SQLCODE = -2290 THEN -- ORA-02290: check constraint violation
+            dbms_output.put_line('Cannot insert value ' || Job_Type || ', constraint violation detected.');
+            dbms_output.put_line('Choose from "ONSITE","REMOTE","HYBRID"');
+        else
+            dbms_output.put_line('The error encountered is: ');
 			dbms_output.put_line(dbms_utility.format_error_stack);
 			dbms_output.put_line('----------------------------------------------------------');
+        end if;
+		rollback;
+			
 	end JOB_CATEGORY_DETAILS;
  /
 
@@ -330,7 +338,8 @@ EXEC JOB_CATEGORY_DETAILS('ONSITE');
 EXEC JOB_CATEGORY_DETAILS('REMOTE');
 EXEC JOB_CATEGORY_DETAILS('HYBRID');
 /
- 
+
+
 -------- Procedure to Insert data into the table Company ------------------
  
 create or replace PROCEDURE COMPANY_DETAILS(Company_Name in VARCHAR2, Company_Description in VARCHAR2,
@@ -389,11 +398,16 @@ create or replace PROCEDURE SKILLSET_DETAILS(Skill_Name in VARCHAR2, Skill_Type 
 		when dup_val_on_index then
 		dbms_output.put_line('Duplicate Value Found in Job_Category table! Insert Different Value');
 		when others then
-		dbms_output.put_line('Error while inserting data into Job_Category Table');
-		rollback;
-			dbms_output.put_line('The error encountered is: ');
+        dbms_output.put_line('Error while inserting data into Job_Category Table');
+        IF SQLCODE = -2290 THEN -- ORA-02290: check constraint violation
+            dbms_output.put_line('Cannot insert value ' || Skill_Type || ', constraint violation detected.');
+            dbms_output.put_line('Choose from "SOFTSKILLS","TECHNICAL"');
+        else
+            dbms_output.put_line('The error encountered is: ');
 			dbms_output.put_line(dbms_utility.format_error_stack);
 			dbms_output.put_line('----------------------------------------------------------');
+        end if;
+		rollback;
 	end SKILLSET_DETAILS;
  
 /
@@ -449,7 +463,6 @@ EXEC EDUCATION_DETAILS('Information System', 'Masters');
 EXEC EDUCATION_DETAILS('Industrial Engineering','Masters');
 EXEC EDUCATION_DETAILS('Civil Engineering', 'Masters');
 EXEC EDUCATION_DETAILS('Psychology', 'Bachelors');
-EXEC EDUCATION_DETAILS('Psychology', 'Bachelors');
 EXEC EDUCATION_DETAILS( 'Marketing', 'Bachelors');
 EXEC EDUCATION_DETAILS('Mechanical Engineering','Bachelors');
 /
@@ -471,6 +484,14 @@ CREATE OR REPLACE PACKAGE BODY ONBOADRDING_USER_PACKAGE AS
     Last_Name IN VARCHAR2, Date_of_Birth IN DATE, Gender IN VARCHAR2,Phone_Number IN NUMBER, Role_Type IN VARCHAR2)
 	AS
 	BEGIN
+    IF LENGTH(TO_CHAR(Phone_Number)) <> 10 THEN
+        RAISE_APPLICATION_ERROR(-20001, 'Phone number must be 10 digits long');
+    END IF;
+    
+    IF Date_of_Birth >= TRUNC(SYSDATE) - 18*365.25 THEN
+        RAISE_APPLICATION_ERROR(-20002, 'User must be at least 18 years old');
+    END IF;
+    
 	dbms_output.put_line('----------------------------------------------------------');
 	INSERT INTO USERS(First_Name, Last_Name, Date_of_Birth, Gender, Phone_Number, Role_Type) VALUES (First_Name, Last_Name, Date_of_Birth, Gender, Phone_Number, Role_Type);
 	dbms_output.put_line('Row inserted into USERS Table');
@@ -479,12 +500,16 @@ CREATE OR REPLACE PACKAGE BODY ONBOADRDING_USER_PACKAGE AS
 	exception
 		when dup_val_on_index then
 		dbms_output.put_line('Duplicate Value Found in USERS table! Insert Different Value');
-		when others then
-		dbms_output.put_line('Error while inserting data into USERS Table');
-		rollback;
-			dbms_output.put_line('The error encountered is: ');
+        when others then
+		IF SQLCODE = -2290 THEN -- ORA-02290: check constraint violation
+            dbms_output.put_line('Cannot insert value ' || Gender || ', constraint violation detected.');
+            dbms_output.put_line('Choose from "MALE","FEMALE","OTHERS"');
+        else
+            dbms_output.put_line('The error encountered is: ');
 			dbms_output.put_line(dbms_utility.format_error_stack);
 			dbms_output.put_line('----------------------------------------------------------');
+        end if;
+		rollback;
 	end USER_DETAILS;
 
 -------- Procedure to insert data into the table User_Skill -------------------
@@ -513,6 +538,10 @@ CREATE OR REPLACE PACKAGE BODY ONBOADRDING_USER_PACKAGE AS
     PROCEDURE USER_EDUCATION_DETAILS(Users_ID IN NUMBER, DEGREE_ID IN NUMBER, START_DATE IN DATE, END_DATE IN DATE)
 	AS
 	BEGIN
+    IF END_DATE < START_DATE THEN
+        RAISE_APPLICATION_ERROR(-20003, 'start date should be less than end date');
+    END IF;
+    
 	dbms_output.put_line('----------------------------------------------------------');
 	INSERT INTO USER_EDUCATION(Users_ID, DEGREE_ID, START_DATE, END_DATE) VALUES (Users_ID, DEGREE_ID, START_DATE, END_DATE);
 	dbms_output.put_line('Row inserted into USER_EDUCATION Table');
@@ -571,7 +600,6 @@ EXEC ONBOADRDING_USER_PACKAGE.USER_SKILL_DETAILS(107, 106);
 EXEC ONBOADRDING_USER_PACKAGE.USER_SKILL_DETAILS(108, 108);
 EXEC ONBOADRDING_USER_PACKAGE.USER_SKILL_DETAILS(110, 101);
 EXEC ONBOADRDING_USER_PACKAGE.USER_SKILL_DETAILS(110, 104);
-EXEC ONBOADRDING_USER_PACKAGE.USER_SKILL_DETAILS(107, 102);
 EXEC ONBOADRDING_USER_PACKAGE.USER_SKILL_DETAILS(109, 102);
 EXEC ONBOADRDING_USER_PACKAGE.USER_SKILL_DETAILS(109, 110);
 /
@@ -598,7 +626,6 @@ EXEC ONBOADRDING_USER_PACKAGE.USER_EDUCATION_DETAILS(110, 105, TO_DATE('02/12/20
 EXEC ONBOADRDING_USER_PACKAGE.USER_EDUCATION_DETAILS(110, 104,TO_DATE('01/12/2021', 'MM/DD/YYYY'), TO_DATE('07/17/2024', 'MM/DD/YYYY'));
 
 /
-
 
 -------- Creating POST_JOB_PACKAGE Package ------------------
 
@@ -642,11 +669,16 @@ BEGIN
         when dup_val_on_index then
             dbms_output.put_line('Duplicate Value Found in JOBPOST table! Insert Different Value');
         when others then
-            dbms_output.put_line('Error while inserting data into JOBPOST Table');
-            rollback;
+        dbms_output.put_line('Error while inserting data into Job_Category Table');
+        IF SQLCODE = -2290 THEN -- ORA-02290: check constraint violation
+            dbms_output.put_line('Cannot insert value ' || Hiring_Status || ', constraint violation detected.');
+            dbms_output.put_line('Choose from "AVAILABLE","EXPIRED"');
+        else
             dbms_output.put_line('The error encountered is: ');
-            dbms_output.put_line(dbms_utility.format_error_stack);
-            dbms_output.put_line('----------------------------------------------------------');
+			dbms_output.put_line(dbms_utility.format_error_stack);
+			dbms_output.put_line('----------------------------------------------------------');
+        end if;
+		rollback;
 END JOBPOST_DETAILS;
 
 
@@ -887,12 +919,16 @@ PROCEDURE APPLICATION_DETAILS(Current_Status IN VARCHAR2, Application_Date IN DA
 	exception
 		when dup_val_on_index then
 		dbms_output.put_line('Duplicate Value Found in APPLICATIONS table! Insert Different Value');
-		when others then
-		dbms_output.put_line('Error while inserting data into APPLICATIONS Table');
-		rollback;
-			dbms_output.put_line('The error encountered is: ');
-			dbms_output.put_line(dbms_utility.format_error_stack);
-			dbms_output.put_line('----------------------------------------------------------');
+		WHEN OTHERS THEN
+        IF SQLCODE = -2290 THEN -- ORA-02290: check constraint violation
+            dbms_output.put_line('Cannot insert status to ' || Current_Status || ', constraint violation detected.');
+            dbms_output.put_line('Choose from ''APPLIED'',''HIRED'',''INTERVIEW_SCHEDULED'', ''REJECTED''');
+        ELSE
+            dbms_output.put_line('Error while updating data into Applications Table');
+            dbms_output.put_line('The error encountered is: ');
+            dbms_output.put_line(dbms_utility.format_error_stack);
+        END IF;
+        ROLLBACK;
 	end APPLICATION_DETAILS;
 
 -------- Procedure to update Application_Status -------------------
