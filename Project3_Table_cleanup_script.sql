@@ -732,14 +732,14 @@ END POST_JOB_PACKAGE;
 
 -------- Inserting Data into JOBPOST -------------------------
 
-EXEC POST_JOB_PACKAGE.JOBPOST_DETAILS('Software Developer', TO_DATE('2022-02-15', 'YYYY-MM-DD'), 'We are seeking a skilled software developer to join our team.', 'user', 50000, 'AVAILABLE', 101, 101, 101);
-EXEC POST_JOB_PACKAGE.JOBPOST_DETAILS('Marketing Manager', TO_DATE('2022-03-01', 'YYYY-MM-DD'), 'We are looking for an experienced marketing manager to lead our team.', 'user',100000, 'AVAILABLE', 102, 102, 102);
-EXEC POST_JOB_PACKAGE.JOBPOST_DETAILS('Data Analyst', TO_DATE('2022-02-28', 'YYYY-MM-DD'), 'We are seeking a data analyst to help us make informed business decisions.', 'user', 60000,'AVAILABLE', 101, 103, 103);
-EXEC POST_JOB_PACKAGE.JOBPOST_DETAILS('Finance Manager', TO_DATE('2022-03-15', 'YYYY-MM-DD'), 'We are looking for a finance manager to oversee our financial operations.', 'user', 120000,'AVAILABLE', 103, 102, 104);
-EXEC POST_JOB_PACKAGE.JOBPOST_DETAILS('IT Support Specialist', TO_DATE('2022-02-20', 'YYYY-MM-DD'), 'We are seeking an IT support specialist to assist our employees with technical issues.', 'user',130000, 'AVAILABLE', 104, 101, 105);
-EXEC POST_JOB_PACKAGE.JOBPOST_DETAILS('Sales Manager', TO_DATE('2022-03-20', 'YYYY-MM-DD'), 'We are seeking an experienced sales manager to lead our team and drive sales growth.', 'user', 4000,'AVAILABLE', 105, 102, 105);
-EXEC POST_JOB_PACKAGE.JOBPOST_DETAILS('Project Manager', TO_DATE('2022-03-10', 'YYYY-MM-DD'), 'We are looking for a skilled project manager to oversee our projects and ensure they are completed on time and within budget.', 'user',140000, 'AVAILABLE', 106, 103, 101);
-EXEC POST_JOB_PACKAGE.JOBPOST_DETAILS('HR Manager', TO_DATE('2022-03-01', 'YYYY-MM-DD'), 'We are looking for an experienced HR manager to oversee our HR department and manage employee relations.', 'user', 700000,'AVAILABLE', 108, 103, 103);
+EXEC POST_JOB_PACKAGE.JOBPOST_DETAILS('Software Developer', TO_DATE('2022-02-15', 'YYYY-MM-DD'), 'We are seeking a skilled software developer to join our team.', user, 50000, 'AVAILABLE', 101, 101, 101);
+EXEC POST_JOB_PACKAGE.JOBPOST_DETAILS('Marketing Manager', TO_DATE('2022-03-01', 'YYYY-MM-DD'), 'We are looking for an experienced marketing manager to lead our team.', user,100000, 'AVAILABLE', 102, 102, 102);
+EXEC POST_JOB_PACKAGE.JOBPOST_DETAILS('Data Analyst', TO_DATE('2022-02-28', 'YYYY-MM-DD'), 'We are seeking a data analyst to help us make informed business decisions.', user, 60000,'AVAILABLE', 101, 103, 103);
+EXEC POST_JOB_PACKAGE.JOBPOST_DETAILS('Finance Manager', TO_DATE('2022-03-15', 'YYYY-MM-DD'), 'We are looking for a finance manager to oversee our financial operations.', user, 120000,'AVAILABLE', 103, 102, 104);
+EXEC POST_JOB_PACKAGE.JOBPOST_DETAILS('IT Support Specialist', TO_DATE('2022-02-20', 'YYYY-MM-DD'), 'We are seeking an IT support specialist to assist our employees with technical issues.', user,130000, 'AVAILABLE', 104, 101, 105);
+EXEC POST_JOB_PACKAGE.JOBPOST_DETAILS('Sales Manager', TO_DATE('2022-03-20', 'YYYY-MM-DD'), 'We are seeking an experienced sales manager to lead our team and drive sales growth.', user, 4000,'AVAILABLE', 105, 102, 105);
+EXEC POST_JOB_PACKAGE.JOBPOST_DETAILS('Project Manager', TO_DATE('2022-03-10', 'YYYY-MM-DD'), 'We are looking for a skilled project manager to oversee our projects and ensure they are completed on time and within budget.', user,140000, 'AVAILABLE', 106, 103, 101);
+EXEC POST_JOB_PACKAGE.JOBPOST_DETAILS('HR Manager', TO_DATE('2022-03-01', 'YYYY-MM-DD'), 'We are looking for an experienced HR manager to oversee our HR department and manage employee relations.', user, 700000,'AVAILABLE', 108, 103, 103);
 EXEC POST_JOB_PACKAGE.JOBPOST_DETAILS('Graphic Designer', TO_DATE('2023-04-12', 'YYYY-MM-DD'), 'We are seeking a creative and skilled graphic designer to join our team and help us develop visual content.', user,30000, 'AVAILABLE',116,102,112);
 EXEC POST_JOB_PACKAGE.JOBPOST_DETAILS('Customer Service Representative', TO_DATE('2022-06-10', 'YYYY-MM-DD'), 'We are looking for a friendly and helpful customer service representative to assist our customers with their inquiries and issues', user,30000, 'AVAILABLE',119,101,116);
 EXEC POST_JOB_PACKAGE.JOBPOST_DETAILS('Web Developer', TO_DATE('2022-07-09', 'YYYY-MM-DD'), 'We are seeking a talented web developer to create and maintain our company website', user,80000, 'AVAILABLE',120,102,109);
@@ -1029,6 +1029,7 @@ EXEC POST_JOB_PACKAGE.Update_Job_Post(111, 'EXPIRED');
 ----- CREATING JOB_SEEKER_PACKAGE PACKAGE ----
 ----- This package has functions and procedure for job seeker to look for jobs and his/her applications ---
 CREATE OR REPLACE PACKAGE JOB_SEEKER_PACKAGE AS
+    PROCEDURE APPLY_JOB(Current_Status IN VARCHAR2, Application_Date IN DATE, Job_Post_ID IN NUMBER,User_ID IN NUMBER);
     FUNCTION check_job_application(p_user_phoneNumber IN NUMBER) RETURN SYS_REFCURSOR;
     FUNCTION job_based_on_degree(p_user_phoneNumber IN NUMBER) RETURN SYS_REFCURSOR;
     FUNCTION job_based_on_skill(p_user_phoneNumber IN NUMBER) RETURN SYS_REFCURSOR;
@@ -1039,6 +1040,31 @@ END JOB_SEEKER_PACKAGE;
 /
 
 CREATE OR REPLACE PACKAGE BODY JOB_SEEKER_PACKAGE AS
+    --- PROCEDURE TO APPLY FOR JOB ---
+    PROCEDURE APPLY_JOB(Current_Status IN VARCHAR2, Application_Date IN DATE, Job_Post_ID IN NUMBER,User_ID IN NUMBER)
+	AS
+	BEGIN
+	dbms_output.put_line('----------------------------------------------------------');
+    IF Current_Status = 'APPLIED' THEN
+        INSERT INTO APPLICATIONS(Current_Status, Application_Date, Job_Post_ID, User_ID) VALUES (Current_Status, Application_Date, Job_Post_ID, User_ID);
+        dbms_output.put_line('Row inserted into APPLICATIONS Table');
+        dbms_output.put_line('----------------------------------------------------------');
+        commit;
+    ELSE
+       dbms_output.put_line('WRONG INPUTS TRY AGAIN');
+        dbms_output.put_line('----------------------------------------------------------');
+    END IF;
+	exception
+		when dup_val_on_index then
+		dbms_output.put_line('Duplicate Value Found in APPLICATIONS table! Insert Different Value');
+		when others then
+		dbms_output.put_line('Error while inserting data into APPLICATIONS Table');
+		rollback;
+			dbms_output.put_line('The error encountered is: ');
+			dbms_output.put_line(dbms_utility.format_error_stack);
+			dbms_output.put_line('----------------------------------------------------------');
+	end APPLY_JOB;
+
     --FUNCTION check job application status
     -- input: p_user_phoneNumber - phone number of jobseeker
     -- output: cursor with job_title, current_status, application_date
@@ -1329,3 +1355,31 @@ SELECT * FROM TRENDING_JOBS;
 SELECT * FROM RECRUITER_ANALYSIS;
 SELECT * FROM LOCATION_WISE_JOB_POSTINGS;
 
+
+---- Granting privileges to recruiter
+grant select,delete,update,insert on sys_admin.jobpost to recruiter1;
+grant select,update on sys_admin.applications to recruiter1;
+grant select on sys_admin.Acceptance_Rates to recruiter1;
+grant select on sys_admin.Recruiter_Analysis to recruiter1;
+grant select on sys_admin.jobpost_analysis to recruiter1;
+grant select on sys_admin.application_status to recruiter1;
+grant select on sys_admin.location_wise_job_postings to recruiter1;
+grant execute on sys_admin.POST_JOB_PACKAGE to recruiter1;
+grant execute on sys_admin.JOB_APPLICATION_PACKAGE to recruiter1;
+
+
+--- Granting privileges to jobseekers
+grant select, insert on sys_admin.users to jobseeker1;
+grant select on sys_admin.education to jobseeker1;
+grant select on sys_admin.skillset to jobseeker1;
+grant select on sys_admin.applications to jobseeker1;
+grant select on sys_admin.jobpost to jobseeker1;
+grant select on sys_admin.acceptance_rates to jobseeker1;
+grant select on sys_admin.top_skills to jobseeker1;
+grant select on sys_admin.trending_jobs to jobseeker1;
+grant select on sys_admin.jobseeker_analysis to jobseeker1;
+grant select on sys_admin.user_application to jobseeker1;
+grant select on sys_admin.salarybased_job to jobseeker1;
+grant execute on sys_admin.JOB_SEEKER_PACKAGE to jobseeker1;
+
+commit;
